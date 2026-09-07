@@ -150,7 +150,7 @@ fun EngineScreen(
                         ) {
                             Icon(
                                 Icons.Filled.FlashOn,
-                                contentDescription = "AutoForge Logo",
+                                contentDescription = "AutoFlow Logo",
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(22.dp)
                             )
@@ -158,14 +158,14 @@ fun EngineScreen(
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text(
-                                "AutoForge",
+                                "AutoFlow",
                                 style = MaterialTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 0.5.sp
                                 )
                             )
                             Text(
-                                "Autonomous Goal & Task Engine",
+                                "Autonomous Goal & Pipeline Engine",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -265,7 +265,7 @@ fun EngineScreen(
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Enter a broad, generic goal. AutoForge will forge a 10/10 prompt, scour & code required skills, and construct custom FastMCP tools.",
+                            "Enter a broad, generic goal. AutoFlow will forge a 10/10 prompt, scour & code required skills, and construct custom FastMCP tools.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -337,7 +337,7 @@ fun EngineScreen(
                                 Icon(Icons.Filled.AutoAwesome, contentDescription = null)
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    "Ignite AutoForge Pipeline",
+                                    "Ignite AutoFlow Pipeline",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
@@ -569,7 +569,7 @@ fun EngineScreen(
                                         },
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Text("Open in Standalone Prompt Forge")
+                                        Text("Open in Standalone Prompt Studio")
                                         Spacer(Modifier.width(6.dp))
                                         Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
                                     }

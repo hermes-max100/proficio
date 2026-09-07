@@ -100,7 +100,7 @@ fun AppThemeTokens.toColorScheme(isDark: Boolean): ColorScheme {
  */
 @Composable
 fun AutoFlowTheme(
-    themeMode: AppThemeMode = AppThemeMode.DARK,
+    themeMode: AppThemeMode = AppThemeMode.SYSTEM,
     glowEnabled: Boolean = true,
     isSystemDark: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit

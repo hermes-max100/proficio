@@ -1,6 +1,6 @@
 {
-  "name": "AutoForge",
-  "description": "Autonomous Goal & Task Engine with Prompt Forge, Skill Forge, and Plugin Forge.",
+  "name": "AutoFlow",
+  "description": "Professional autonomous prompt creation, skills, and tooling control platform.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

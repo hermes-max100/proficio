@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.NetworkCheck
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Public
@@ -94,6 +96,9 @@ import com.aistudio.promptforge.abcd.ui.MainViewModel
 import com.aistudio.promptforge.abcd.ui.Screen
 import com.aistudio.promptforge.abcd.ui.components.ApiDiagnosticsDialog
 import com.aistudio.promptforge.abcd.ui.components.ErrorBanner
+import com.aistudio.promptforge.abcd.ui.components.ThemeSelectorDialog
+import com.aistudio.promptforge.abcd.ui.theme.AppThemeMode
+import com.aistudio.promptforge.abcd.ui.theme.ThemeManager
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -114,12 +119,21 @@ fun DashboardScreen(
 
     var activeInputGoal by remember { mutableStateOf(goalInput) }
     var showDiagnosticsDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
     val totalSavedCount = savedPacks.size + savedPrompts.size + savedSkills.size + savedMcps.size
 
     if (showDiagnosticsDialog) {
         ApiDiagnosticsDialog(
             viewModel = viewModel,
             onDismiss = { showDiagnosticsDialog = false }
+        )
+    }
+
+    if (showThemeDialog) {
+        val tm = viewModel.themeManager ?: remember { ThemeManager(context) }
+        ThemeSelectorDialog(
+            themeManager = tm,
+            onDismiss = { showThemeDialog = false }
         )
     }
 
@@ -153,7 +167,7 @@ fun DashboardScreen(
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    "AutoForge",
+                                    "AutoFlow",
                                     style = MaterialTheme.typography.titleLarge.copy(
                                         fontWeight = FontWeight.Black,
                                         letterSpacing = (-0.5).sp
@@ -176,7 +190,7 @@ fun DashboardScreen(
                                 }
                             }
                             Text(
-                                "Autonomous Agent & Tooling Engines",
+                                "Autonomous Agent & Tooling Control Room",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -184,6 +198,16 @@ fun DashboardScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { showThemeDialog = true },
+                        modifier = Modifier.testTag("dashboard_theme_button")
+                    ) {
+                        Icon(
+                            Icons.Filled.Palette,
+                            contentDescription = "Appearance & Themes",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     IconButton(
                         onClick = { showDiagnosticsDialog = true },
                         modifier = Modifier.testTag("dashboard_api_diagnostics_button")
@@ -244,6 +268,114 @@ fun DashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(top = 8.dp, bottom = 32.dp)
             ) {
+            // ----------------------------------------------------
+            // WORKSPACE APPEARANCE & THEME PICKER SECTION
+            // ----------------------------------------------------
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("dashboard_appearance_section_card"),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(MaterialTheme.colorScheme.primaryContainer),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Palette,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Spacer(Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        "Workspace Appearance",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        "Active: ${viewModel.themeManager?.themeMode?.collectAsState()?.value?.title ?: "System Default"}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+
+                            Button(
+                                onClick = { showThemeDialog = true },
+                                shape = RoundedCornerShape(10.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                modifier = Modifier.testTag("dashboard_customize_theme_button")
+                            ) {
+                                Text("Customize", fontSize = 12.sp)
+                            }
+                        }
+
+                        Spacer(Modifier.height(10.dp))
+
+                        // Quick Theme Switcher Chips
+                        val currentMode = viewModel.themeManager?.themeMode?.collectAsState()?.value ?: AppThemeMode.SYSTEM
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            listOf(
+                                AppThemeMode.SYSTEM to "System",
+                                AppThemeMode.DARK to "Dark",
+                                AppThemeMode.LIGHT to "Light",
+                                AppThemeMode.NEON to "Neon",
+                                AppThemeMode.CYBERPUNK to "Cyberpunk"
+                            ).forEach { (mode, label) ->
+                                val isSelected = currentMode == mode
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = {
+                                        viewModel.themeManager?.setThemeMode(mode)
+                                    },
+                                    label = {
+                                        Text(label, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                    },
+                                    leadingIcon = if (isSelected) {
+                                        {
+                                            Icon(
+                                                Icons.Filled.CheckCircle,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                        }
+                                    } else null,
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                        selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    modifier = Modifier.testTag("dashboard_quick_theme_${mode.name.lowercase()}")
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             // ----------------------------------------------------
             // 1. ENGINE STATUS & PIPELINE STATE BANNER
             // ----------------------------------------------------

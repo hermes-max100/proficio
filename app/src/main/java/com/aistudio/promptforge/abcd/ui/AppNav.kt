@@ -36,10 +36,10 @@ import com.aistudio.promptforge.abcd.ui.screens.VaultScreen
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Dashboard : Screen("dashboard", "Dashboard", Icons.Filled.Dashboard)
     object PromptRepository : Screen("prompt_repository", "Repo", Icons.Filled.AutoAwesome)
-    object PromptForge : Screen("prompt_forge", "Prompt Forge", Icons.Filled.Edit)
-    object Engine : Screen("engine", "Auto Forge", Icons.Filled.FlashOn)
-    object SkillForge : Screen("skill_forge", "Skill Forge", Icons.Filled.Psychology)
-    object PluginForge : Screen("plugin_forge", "Plugin Forge", Icons.Filled.Extension)
+    object PromptForge : Screen("prompt_forge", "Prompts", Icons.Filled.Edit)
+    object Engine : Screen("engine", "Engine", Icons.Filled.FlashOn)
+    object SkillForge : Screen("skill_forge", "Skills", Icons.Filled.Psychology)
+    object PluginForge : Screen("plugin_forge", "Plugins", Icons.Filled.Extension)
     object Vault : Screen("vault", "Vault", Icons.Filled.Inventory)
 }
 

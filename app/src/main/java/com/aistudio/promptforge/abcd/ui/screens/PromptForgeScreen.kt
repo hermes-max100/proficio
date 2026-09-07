@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.NetworkCheck
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
@@ -89,6 +90,8 @@ import com.aistudio.promptforge.abcd.ui.MainViewModel
 import com.aistudio.promptforge.abcd.ui.Screen
 import com.aistudio.promptforge.abcd.ui.components.ApiDiagnosticsDialog
 import com.aistudio.promptforge.abcd.ui.components.ErrorBanner
+import com.aistudio.promptforge.abcd.ui.components.ThemeSelectorDialog
+import com.aistudio.promptforge.abcd.ui.theme.ThemeManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -113,6 +116,7 @@ fun PromptForgeScreen(
     var promptSearchQuery by remember { mutableStateOf("") }
     var selectedFrameworkCategory by remember { mutableStateOf("All") }
     var showDiagnosticsDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
     var promptDetailToView by remember { mutableStateOf<SavedPrompt?>(null) }
 
     val frameworks = listOf("Auto-Agent", "GEPA Optimization", "CO-STAR", "CRAFT", "Few-Shot Chain")
@@ -122,6 +126,14 @@ fun PromptForgeScreen(
         ApiDiagnosticsDialog(
             viewModel = viewModel,
             onDismiss = { showDiagnosticsDialog = false }
+        )
+    }
+
+    if (showThemeDialog) {
+        val tm = viewModel.themeManager ?: remember { ThemeManager(context) }
+        ThemeSelectorDialog(
+            themeManager = tm,
+            onDismiss = { showThemeDialog = false }
         )
     }
 
@@ -259,7 +271,7 @@ fun PromptForgeScreen(
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text(
-                                "Prompt Forge",
+                                "Prompt Studio",
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                             )
                             Text(
@@ -271,6 +283,17 @@ fun PromptForgeScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { showThemeDialog = true },
+                        modifier = Modifier.testTag("prompt_forge_theme_selector_button")
+                    ) {
+                        Icon(
+                            Icons.Filled.Palette,
+                            contentDescription = "Workspace Theme & Appearance",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
                     // API Diagnostics button
                     IconButton(
                         onClick = { showDiagnosticsDialog = true },

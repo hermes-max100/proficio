@@ -143,4 +143,4 @@ val CyberpunkThemeTokens = AppThemeTokens(
 )
 
 val LocalAppThemeTokens = staticCompositionLocalOf { DarkThemeTokens }
-val LocalThemeMode = compositionLocalOf { AppThemeMode.DARK }
+val LocalThemeMode = compositionLocalOf { AppThemeMode.SYSTEM }
