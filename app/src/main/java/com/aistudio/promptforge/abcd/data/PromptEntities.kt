@@ -154,5 +154,33 @@ data class LlmCredentialEntity(
     val lastTestedAt: Long = 0,
     val isHealthy: Boolean = false,
     val lastLatencyMs: Long = 0
+) {
+    val maskedValue: String
+        get() = if (credentialValue.isBlank()) ""
+        else if (credentialValue.length <= 6) "••••••••"
+        else "••••••••" + credentialValue.takeLast(4)
+}
+
+@Entity(tableName = "durable_runs")
+@Serializable
+data class DurableRunEntity(
+    @PrimaryKey val id: String,
+    val idempotencyKey: String,
+    val goalTitle: String,
+    val goalInput: String,
+    val selectedModel: String,
+    val state: String, // PENDING, RUNNING, PAUSED, FAILED, CANCELLED, COMPLETED
+    val currentStepIndex: Int = 0,
+    val totalSteps: Int = 4,
+    val currentStepName: String = "Initialization",
+    val retryCount: Int = 0,
+    val maxRetries: Int = 3,
+    val lastError: String? = null,
+    val lastErrorCode: String? = null,
+    val suggestedAction: String? = null, // RESUME, RETRY, EDIT
+    val checkpointDataJson: String = "{}",
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
+    val completedAt: Long? = null
 )
 

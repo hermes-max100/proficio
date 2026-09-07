@@ -19,12 +19,17 @@ import com.aistudio.promptforge.abcd.model.ProvenanceStatus
 import com.aistudio.promptforge.abcd.util.ImportResult
 import java.util.UUID
 import com.aistudio.promptforge.abcd.data.SavedSkill
+import com.aistudio.promptforge.abcd.data.DurableRunEntity
+import com.aistudio.promptforge.abcd.model.ActionableFailure
 import com.aistudio.promptforge.abcd.model.AppError
 import com.aistudio.promptforge.abcd.model.AutoForgePackData
+import com.aistudio.promptforge.abcd.model.CheckpointStage
 import com.aistudio.promptforge.abcd.model.GeneratedMcp
 import com.aistudio.promptforge.abcd.model.GeneratedSkill
 import com.aistudio.promptforge.abcd.model.GoalPreset
+import com.aistudio.promptforge.abcd.model.RecoveryAction
 import com.aistudio.promptforge.abcd.model.RepoPromptItem
+import com.aistudio.promptforge.abcd.model.RunState
 import com.aistudio.promptforge.abcd.ui.coordinators.AutoForgeCoordinator
 import com.aistudio.promptforge.abcd.ui.coordinators.InteractiveRunnerCoordinator
 import com.aistudio.promptforge.abcd.ui.coordinators.PromptForgeCoordinator
@@ -137,13 +142,21 @@ class MainViewModel(
     )
 
     // ==========================================
-    // DELEGATED AUTO FORGE FLOWS
+    // DELEGATED AUTO FORGE FLOWS & DURABLE RUNS
     // ==========================================
     val goalInput: StateFlow<String> = autoForgeCoordinator.goalInput
     val engineStage: StateFlow<EngineStage> = autoForgeCoordinator.engineStage
     val isEngineRunning: StateFlow<Boolean> = autoForgeCoordinator.isEngineRunning
     val activePack: StateFlow<AutoForgePackData?> = autoForgeCoordinator.activePack
     val engineLogs: StateFlow<List<String>> = autoForgeCoordinator.engineLogs
+
+    val durableRuns: StateFlow<List<DurableRunEntity>> = repository.getAllDurableRuns()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val activeDurableRun: StateFlow<DurableRunEntity?> = autoForgeCoordinator.activeDurableRun
+    val runState: StateFlow<RunState> = autoForgeCoordinator.runState
+    val checkpointStage: StateFlow<CheckpointStage> = autoForgeCoordinator.checkpointStage
+    val isGlobalPaused: StateFlow<Boolean> = autoForgeCoordinator.isGlobalPaused
+    val currentFailure: StateFlow<ActionableFailure?> = autoForgeCoordinator.currentFailure
 
     // ==========================================
     // DELEGATED PROMPT FORGE FLOWS
@@ -237,6 +250,18 @@ class MainViewModel(
             onPromptSynthesized = { promptForgeCoordinator.setPrompt10OutOf10(it) }
         )
     }
+
+    fun toggleGlobalPause() = autoForgeCoordinator.toggleGlobalPause()
+
+    fun setGlobalPause(paused: Boolean) = autoForgeCoordinator.setGlobalPause(paused)
+
+    fun pauseEngine(reason: String = "User paused") = autoForgeCoordinator.pausePipeline(reason)
+
+    fun resumeEngine(runId: String? = null) = autoForgeCoordinator.resumePipeline(runId)
+
+    fun cancelEngine() = autoForgeCoordinator.cancelPipeline()
+
+    fun retryEngine() = autoForgeCoordinator.retryPipeline()
 
     fun saveActivePackToVault(): Boolean = autoForgeCoordinator.saveActivePackToVault()
 

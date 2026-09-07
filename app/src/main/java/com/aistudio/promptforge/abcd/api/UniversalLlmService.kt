@@ -1,8 +1,9 @@
 package com.aistudio.promptforge.abcd.api
 
-import android.util.Log
 import com.aistudio.promptforge.abcd.BuildConfig
 import com.aistudio.promptforge.abcd.data.LlmCredentialEntity
+import com.aistudio.promptforge.abcd.util.SafeLogger
+import com.aistudio.promptforge.abcd.util.SecretMasker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -126,12 +127,12 @@ object UniversalLlmService {
             }
         } catch (e: Exception) {
             val latency = System.currentTimeMillis() - startTime
-            Log.e(TAG, "Execution failed", e)
+            SafeLogger.e(TAG, "Execution failed: ${SecretMasker.sanitize(e.message)}", e)
             UniversalLlmResult(
                 isSuccess = false,
                 text = "",
                 latencyMs = latency,
-                errorMessage = e.message ?: "Unknown communication error",
+                errorMessage = SecretMasker.sanitize(e.message) ?: "Unknown communication error",
                 provider = effectiveProvider,
                 model = effectiveModel
             )
@@ -190,11 +191,12 @@ object UniversalLlmService {
             val latency = System.currentTimeMillis() - startTime
             val responseString = response.body?.string() ?: ""
             if (!response.isSuccessful) {
+                val cleanResponse = SecretMasker.sanitize(responseString)
                 return UniversalLlmResult(
                     isSuccess = false,
                     text = "",
                     latencyMs = latency,
-                    errorMessage = "Gemini API HTTP ${response.code}: $responseString",
+                    errorMessage = "Gemini API HTTP ${response.code}: $cleanResponse",
                     provider = "GEMINI",
                     model = cleanModel
                 )
@@ -268,11 +270,12 @@ object UniversalLlmService {
             val latency = System.currentTimeMillis() - startTime
             val responseString = response.body?.string() ?: ""
             if (!response.isSuccessful) {
+                val cleanResponse = SecretMasker.sanitize(responseString)
                 return UniversalLlmResult(
                     isSuccess = false,
                     text = "",
                     latencyMs = latency,
-                    errorMessage = "LLM API HTTP ${response.code}: $responseString",
+                    errorMessage = "LLM API HTTP ${response.code}: $cleanResponse",
                     provider = "OPENAI",
                     model = model
                 )
@@ -346,11 +349,12 @@ object UniversalLlmService {
             val latency = System.currentTimeMillis() - startTime
             val responseString = response.body?.string() ?: ""
             if (!response.isSuccessful) {
+                val cleanResponse = SecretMasker.sanitize(responseString)
                 return UniversalLlmResult(
                     isSuccess = false,
                     text = "",
                     latencyMs = latency,
-                    errorMessage = "Anthropic API HTTP ${response.code}: $responseString",
+                    errorMessage = "Anthropic API HTTP ${response.code}: $cleanResponse",
                     provider = "ANTHROPIC",
                     model = model
                 )
@@ -402,7 +406,7 @@ object UniversalLlmService {
                 ConnectionTestResult(
                     isSuccess = false,
                     latencyMs = latency,
-                    message = result.errorMessage ?: "Authentication or network failure",
+                    message = SecretMasker.sanitize(result.errorMessage ?: "Authentication or network failure"),
                     detectedModel = credential.defaultModel
                 )
             }
@@ -411,7 +415,7 @@ object UniversalLlmService {
             ConnectionTestResult(
                 isSuccess = false,
                 latencyMs = latency,
-                message = "Failed: ${e.message}",
+                message = "Failed: ${SecretMasker.sanitize(e.message)}",
                 detectedModel = credential.defaultModel
             )
         }

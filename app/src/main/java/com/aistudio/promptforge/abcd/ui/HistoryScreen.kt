@@ -696,7 +696,7 @@ private fun EmptyHistoryView(
 
             Text(
                 text = if (isFiltered) "Try adjusting your search query or status filter."
-                else "Runs performed in Prompt Studio, AutoFlow Engine, or Interactive Runner are automatically tracked in Room with latency, token metrics, and provenance.",
+                else "Runs performed in Prompt Studio, Perficio Engine, or Interactive Runner are automatically tracked in Room with latency, token metrics, and provenance.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

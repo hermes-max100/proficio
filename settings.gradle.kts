@@ -17,5 +17,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "AutoFlow"
+rootProject.name = "Perficio"
 include(":app")

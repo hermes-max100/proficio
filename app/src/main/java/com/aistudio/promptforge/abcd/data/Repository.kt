@@ -190,6 +190,17 @@ class PromptRepository(
     suspend fun insertPlaygroundRun(run: PlaygroundRun) = dao.insertPlaygroundRun(run)
     suspend fun clearPlaygroundRuns() = dao.clearPlaygroundRuns()
 
+    // Durable Autonomous Runs
+    fun getAllDurableRuns(): Flow<List<DurableRunEntity>> = dao.getAllDurableRuns()
+    fun getDurableRunById(id: String): Flow<DurableRunEntity?> = dao.getDurableRunById(id)
+    suspend fun getDurableRunByIdSync(id: String): DurableRunEntity? = dao.getDurableRunByIdSync(id)
+    suspend fun findActiveRunByIdempotencyKey(key: String): DurableRunEntity? = dao.findActiveRunByIdempotencyKey(key)
+    suspend fun insertOrUpdateDurableRun(run: DurableRunEntity) = dao.insertOrUpdateDurableRun(run)
+    suspend fun updateRunState(id: String, newState: String) = dao.updateRunState(id, newState)
+    suspend fun pauseAllActiveRuns() = dao.pauseAllActiveRuns()
+    suspend fun deleteDurableRun(id: String) = dao.deleteDurableRun(id)
+    suspend fun clearAllDurableRuns() = dao.clearAllDurableRuns()
+
     companion object {
         fun estimateTokenCount(text: String): Int {
             if (text.isBlank()) return 0

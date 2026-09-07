@@ -157,6 +157,9 @@ fun DashboardScreen(
         val tm = viewModel.themeManager ?: remember { ThemeManager(context) }
         ThemeSelectorDialog(
             themeManager = tm,
+            onOpenThemeBuilder = {
+                navController.navigate(Screen.ThemeBuilder.route)
+            },
             onDismiss = { showThemeDialog = false }
         )
     }
@@ -191,7 +194,7 @@ fun DashboardScreen(
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    "AutoFlow",
+                                    "Perficio",
                                     style = MaterialTheme.typography.titleLarge.copy(
                                         fontWeight = FontWeight.Black,
                                         letterSpacing = (-0.5).sp

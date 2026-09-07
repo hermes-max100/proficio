@@ -20,14 +20,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.SettingsBrightness
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -56,15 +58,18 @@ import com.aistudio.promptforge.abcd.ui.theme.DarkThemeTokens
 import com.aistudio.promptforge.abcd.ui.theme.LightThemeTokens
 import com.aistudio.promptforge.abcd.ui.theme.LocalAppThemeTokens
 import com.aistudio.promptforge.abcd.ui.theme.NeonThemeTokens
+import com.aistudio.promptforge.abcd.ui.theme.ObsidianThemeTokens
 import com.aistudio.promptforge.abcd.ui.theme.ThemeManager
 
 @Composable
 fun ThemeSelectorDialog(
     themeManager: ThemeManager,
+    onOpenThemeBuilder: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     val currentMode by themeManager.themeMode.collectAsState()
     val glowEnabled by themeManager.glowEffectsEnabled.collectAsState()
+    val activeCustomTheme by themeManager.activeCustomTheme.collectAsState()
     val tokens = LocalAppThemeTokens.current
 
     AlertDialog(
@@ -80,7 +85,7 @@ fun ThemeSelectorDialog(
                 ) {
                     Icon(
                         Icons.Filled.Palette,
-                        contentDescription = "Theme System",
+                        contentDescription = "Perficio Theme Engine",
                         tint = tokens.accentPrimary,
                         modifier = Modifier.size(22.dp)
                     )
@@ -88,11 +93,11 @@ fun ThemeSelectorDialog(
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Text(
-                        "Workspace Appearance",
+                        "Perficio Theme Engine",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     Text(
-                        "Shared tokenized design system",
+                        "Centralized token system with contrast safety",
                         style = MaterialTheme.typography.labelSmall,
                         color = tokens.textSecondary
                     )
@@ -107,12 +112,22 @@ fun ThemeSelectorDialog(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Text(
-                    "Choose an appearance mode. AutoFlow preserves strict high-contrast readability across all themes:",
+                    "Choose an appearance mode or build a custom theme with full slider control:",
                     style = MaterialTheme.typography.bodySmall,
                     color = tokens.textSecondary
                 )
 
-                // Theme Mode Cards
+                // 1. Perficio Obsidian (New Default!)
+                ThemeOptionCard(
+                    mode = AppThemeMode.OBSIDIAN,
+                    isSelected = currentMode == AppThemeMode.OBSIDIAN || currentMode == AppThemeMode.SYSTEM,
+                    tokens = ObsidianThemeTokens,
+                    icon = Icons.Filled.DarkMode,
+                    onSelect = { themeManager.setThemeMode(AppThemeMode.OBSIDIAN) },
+                    testTag = "theme_option_obsidian"
+                )
+
+                // 2. Perficio Dark (Preserved preset)
                 ThemeOptionCard(
                     mode = AppThemeMode.DARK,
                     isSelected = currentMode == AppThemeMode.DARK,
@@ -122,6 +137,7 @@ fun ThemeSelectorDialog(
                     testTag = "theme_option_dark"
                 )
 
+                // 3. Perficio Light (Preserved preset)
                 ThemeOptionCard(
                     mode = AppThemeMode.LIGHT,
                     isSelected = currentMode == AppThemeMode.LIGHT,
@@ -131,6 +147,7 @@ fun ThemeSelectorDialog(
                     testTag = "theme_option_light"
                 )
 
+                // 4. Perficio Neon (Preserved preset)
                 ThemeOptionCard(
                     mode = AppThemeMode.NEON,
                     isSelected = currentMode == AppThemeMode.NEON,
@@ -140,6 +157,7 @@ fun ThemeSelectorDialog(
                     testTag = "theme_option_neon"
                 )
 
+                // 5. Perficio Cyberpunk (Preserved preset)
                 ThemeOptionCard(
                     mode = AppThemeMode.CYBERPUNK,
                     isSelected = currentMode == AppThemeMode.CYBERPUNK,
@@ -149,22 +167,138 @@ fun ThemeSelectorDialog(
                     testTag = "theme_option_cyberpunk"
                 )
 
-                ThemeOptionCard(
-                    mode = AppThemeMode.SYSTEM,
-                    isSelected = currentMode == AppThemeMode.SYSTEM,
-                    tokens = DarkThemeTokens, // Reference preview
-                    icon = Icons.Filled.BrightnessAuto,
-                    onSelect = { themeManager.setThemeMode(AppThemeMode.SYSTEM) },
-                    testTag = "theme_option_system"
-                )
+                // 6. Custom Theme (Replaces fifth default option!)
+                val isCustomSelected = currentMode == AppThemeMode.CUSTOM
+                val customTokens = activeCustomTheme.toTokens()
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable {
+                            themeManager.setThemeMode(AppThemeMode.CUSTOM)
+                            onDismiss()
+                            onOpenThemeBuilder()
+                        }
+                        .testTag("theme_option_custom"),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isCustomSelected) {
+                            tokens.accentPrimary.copy(alpha = 0.12f)
+                        } else {
+                            tokens.surfaceElevated
+                        }
+                    ),
+                    border = BorderStroke(
+                        width = if (isCustomSelected) 1.8.dp else 1.dp,
+                        color = if (isCustomSelected) tokens.accentPrimary else tokens.border
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isCustomSelected) tokens.accentPrimary else tokens.surface),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Tune,
+                                        contentDescription = null,
+                                        tint = if (isCustomSelected) tokens.onPrimary else tokens.textPrimary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Spacer(Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        "Custom: ${activeCustomTheme.name}",
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            fontWeight = if (isCustomSelected) FontWeight.Bold else FontWeight.SemiBold
+                                        ),
+                                        color = tokens.textPrimary
+                                    )
+                                    Text(
+                                        "User Engineered Theme Studio",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = if (isCustomSelected) tokens.accentPrimary else tokens.textSecondary,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+
+                            if (isCustomSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(22.dp)
+                                        .clip(CircleShape)
+                                        .background(tokens.accentPrimary),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Check,
+                                        contentDescription = "Selected",
+                                        tint = tokens.onPrimary,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "Configure semantic colors, surface styles, corner radius, glow, and theme intensity slider.",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 12.sp,
+                            color = tokens.textSecondary
+                        )
+
+                        Spacer(Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                ColorSwatch(color = customTokens.background, label = "Bg", textColor = customTokens.textPrimary)
+                                ColorSwatch(color = customTokens.surface, label = "Surface", textColor = customTokens.textPrimary)
+                                ColorSwatch(color = customTokens.accentPrimary, label = "Primary", textColor = customTokens.onPrimary)
+                                ColorSwatch(color = customTokens.accentSecondary, label = "Secondary", textColor = customTokens.onSecondary)
+                            }
+
+                            Button(
+                                onClick = {
+                                    themeManager.setThemeMode(AppThemeMode.CUSTOM)
+                                    onDismiss()
+                                    onOpenThemeBuilder()
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = tokens.accentPrimary,
+                                    contentColor = tokens.onPrimary
+                                ),
+                                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                modifier = Modifier.testTag("theme_open_builder_button")
+                            ) {
+                                Text("Edit Studio", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
                 // State Glow Toggle
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = tokens.surfaceElevated
-                    ),
+                    colors = CardDefaults.cardColors(containerColor = tokens.surfaceElevated),
                     border = BorderStroke(1.dp, tokens.border),
                     shape = RoundedCornerShape(10.dp)
                 ) {
@@ -182,7 +316,7 @@ fun ThemeSelectorDialog(
                                 color = tokens.textPrimary
                             )
                             Text(
-                                "Glow indicates active running & generation states (never pure decoration)",
+                                "Indicates active agent runs and generation telemetry",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontSize = 11.sp,
                                 color = tokens.textSecondary
@@ -210,20 +344,16 @@ fun ThemeSelectorDialog(
             }
         },
         dismissButton = {
-            if (currentMode != AppThemeMode.SYSTEM) {
+            if (currentMode != AppThemeMode.OBSIDIAN) {
                 OutlinedButton(
-                    onClick = { themeManager.resetToSystemDefault() },
+                    onClick = { themeManager.resetToDefault() },
                     shape = RoundedCornerShape(8.dp),
                     border = BorderStroke(1.dp, tokens.border),
-                    modifier = Modifier.testTag("theme_reset_system_button")
+                    modifier = Modifier.testTag("theme_reset_default_button")
                 ) {
-                    Icon(
-                        Icons.Filled.SettingsBrightness,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp)
-                    )
+                    Icon(Icons.Filled.SettingsBrightness, contentDescription = null, modifier = Modifier.size(14.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("Use System Setting", fontSize = 12.sp)
+                    Text("Default Obsidian", fontSize = 12.sp)
                 }
             }
         }
@@ -279,7 +409,7 @@ private fun ThemeOptionCard(
                         Icon(
                             icon,
                             contentDescription = null,
-                            tint = if (isSelected) Color.White else currentTheme.textPrimary,
+                            tint = if (isSelected) currentTheme.onPrimary else currentTheme.textPrimary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -312,7 +442,7 @@ private fun ThemeOptionCard(
                         Icon(
                             Icons.Filled.Check,
                             contentDescription = "Selected",
-                            tint = Color.White,
+                            tint = currentTheme.onPrimary,
                             modifier = Modifier.size(14.dp)
                         )
                     }
@@ -328,26 +458,24 @@ private fun ThemeOptionCard(
             )
 
             // Swatch Chips Preview
-            if (mode != AppThemeMode.SYSTEM) {
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ColorSwatch(color = tokens.background, label = "Bg", textColor = tokens.textPrimary)
-                    ColorSwatch(color = tokens.surface, label = "Surface", textColor = tokens.textPrimary)
-                    ColorSwatch(color = tokens.accentPrimary, label = "Primary", textColor = Color.White)
-                    ColorSwatch(color = tokens.accentSecondary, label = "Secondary", textColor = Color.Black)
-                    if (tokens.isGlowEnabled) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(tokens.accentPrimary.copy(alpha = 0.2f))
-                                .border(1.dp, tokens.accentPrimary.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                        ) {
-                            Text("State Glow", fontSize = 9.sp, color = tokens.accentPrimary, fontWeight = FontWeight.Bold)
-                        }
+            Spacer(Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ColorSwatch(color = tokens.background, label = "Bg", textColor = tokens.textPrimary)
+                ColorSwatch(color = tokens.surface, label = "Surface", textColor = tokens.textPrimary)
+                ColorSwatch(color = tokens.accentPrimary, label = "Primary", textColor = tokens.onPrimary)
+                ColorSwatch(color = tokens.accentSecondary, label = "Secondary", textColor = tokens.onSecondary)
+                if (tokens.isGlowEnabled) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(tokens.accentPrimary.copy(alpha = 0.2f))
+                            .border(1.dp, tokens.accentPrimary.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text("Glow", fontSize = 9.sp, color = tokens.accentPrimary, fontWeight = FontWeight.Bold)
                     }
                 }
             }

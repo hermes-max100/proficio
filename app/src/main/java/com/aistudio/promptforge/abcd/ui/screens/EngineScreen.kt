@@ -43,10 +43,15 @@ import androidx.compose.material.icons.filled.NetworkCheck
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PauseCircle
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -114,6 +119,10 @@ fun EngineScreen(
     val activePack by viewModel.activePack.collectAsState()
     val engineLogs by viewModel.engineLogs.collectAsState()
     val currentError by viewModel.currentError.collectAsState()
+    val runState by viewModel.runState.collectAsState()
+    val isGlobalPaused by viewModel.isGlobalPaused.collectAsState()
+    val activeDurableRun by viewModel.activeDurableRun.collectAsState()
+    val currentFailure by viewModel.currentFailure.collectAsState()
 
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -150,7 +159,7 @@ fun EngineScreen(
                         ) {
                             Icon(
                                 Icons.Filled.FlashOn,
-                                contentDescription = "AutoFlow Logo",
+                                contentDescription = "Perficio Logo",
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(22.dp)
                             )
@@ -158,7 +167,7 @@ fun EngineScreen(
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text(
-                                "AutoFlow",
+                                "Perficio",
                                 style = MaterialTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 0.5.sp
@@ -173,6 +182,16 @@ fun EngineScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { viewModel.toggleGlobalPause() },
+                        modifier = Modifier.testTag("engine_global_pause_button")
+                    ) {
+                        Icon(
+                            if (isGlobalPaused) Icons.Filled.PlayCircle else Icons.Filled.PauseCircle,
+                            contentDescription = if (isGlobalPaused) "Resume Perficio" else "Pause Perficio",
+                            tint = if (isGlobalPaused) Color(0xFFF59E0B) else MaterialTheme.colorScheme.primary
+                        )
+                    }
                     IconButton(
                         onClick = { showThemeDialog = true },
                         modifier = Modifier.testTag("engine_theme_selector_button")
@@ -230,6 +249,62 @@ fun EngineScreen(
                 onRetry = { viewModel.retryLastAction() }
             )
 
+            // Global Pause Notification Banner
+            if (isGlobalPaused) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                        .testTag("global_pause_banner"),
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color(0xFFFEF3C7),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.5f))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(
+                                Icons.Filled.PauseCircle,
+                                contentDescription = null,
+                                tint = Color(0xFFB45309),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    "Perficio Global Pause Active",
+                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    color = Color(0xFF92400E)
+                                )
+                                Text(
+                                    "Autonomous runs paused at checkpoints. Tap Resume to unpause.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFFB45309)
+                                )
+                            }
+                        }
+                        Button(
+                            onClick = { viewModel.setGlobalPause(false) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.height(34.dp).testTag("resume_global_pause_button")
+                        ) {
+                            Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Resume", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -265,7 +340,7 @@ fun EngineScreen(
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Enter a broad, generic goal. AutoFlow will forge a 10/10 prompt, scour & code required skills, and construct custom FastMCP tools.",
+                            "Enter a broad, generic goal. Perficio will forge a 10/10 prompt, scour & code required skills, and construct custom FastMCP tools.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -315,7 +390,7 @@ fun EngineScreen(
                         // Launch Button
                         Button(
                             onClick = { viewModel.runAutoForgePipeline(goalInput) },
-                            enabled = !isRunning && goalInput.isNotBlank(),
+                            enabled = !isRunning && goalInput.isNotBlank() && !isGlobalPaused,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(52.dp)
@@ -337,9 +412,169 @@ fun EngineScreen(
                                 Icon(Icons.Filled.AutoAwesome, contentDescription = null)
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    "Ignite AutoFlow Pipeline",
+                                    if (isGlobalPaused) "Engine Paused (Unpause to run)" else "Ignite Perficio Pipeline",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                                 )
+                            }
+                        }
+
+                        // Running Controls: Pause & Cancel
+                        if (isRunning) {
+                            Spacer(Modifier.height(10.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                OutlinedButton(
+                                    onClick = { viewModel.pauseEngine() },
+                                    modifier = Modifier.weight(1f).testTag("pause_running_pipeline_button"),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Icon(Icons.Filled.Pause, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(Modifier.width(6.dp))
+                                    Text("Pause Run")
+                                }
+                                OutlinedButton(
+                                    onClick = { viewModel.cancelEngine() },
+                                    modifier = Modifier.weight(1f).testTag("cancel_running_pipeline_button"),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Icon(Icons.Filled.Cancel, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(Modifier.width(6.dp))
+                                    Text("Cancel Run")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 1.5 Durable Run Checkpoint / Paused Banner
+            if (runState == com.aistudio.promptforge.abcd.model.RunState.PAUSED) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("checkpoint_paused_card"),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
+                        ),
+                        border = androidx.compose.foundation.BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Filled.PauseCircle,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    "Autonomous Run Paused at Checkpoint",
+                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            }
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                "Intermediate progress safely preserved: ${activeDurableRun?.currentStepName ?: "Checkpoint"}. Completed stages will be skipped upon resuming.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f)
+                            )
+                            Spacer(Modifier.height(10.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = { viewModel.resumeEngine() },
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier.testTag("resume_paused_run_button")
+                                ) {
+                                    Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(Modifier.width(4.dp))
+                                    Text("Resume Run", fontWeight = FontWeight.Bold)
+                                }
+                                OutlinedButton(
+                                    onClick = { viewModel.cancelEngine() },
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier.testTag("cancel_paused_run_button")
+                                ) {
+                                    Icon(Icons.Filled.Cancel, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(Modifier.width(4.dp))
+                                    Text("Cancel Run")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 1.6 Actionable Failure Directive Card
+            if (currentFailure != null && !isRunning) {
+                item {
+                    val failure = currentFailure!!
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("actionable_failure_card"),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
+                        ),
+                        border = androidx.compose.foundation.BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.error.copy(alpha = 0.4f)
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Filled.Warning,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    failure.title,
+                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                failure.userMessage,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.9f)
+                            )
+                            Spacer(Modifier.height(10.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = {
+                                        when (failure.action) {
+                                            com.aistudio.promptforge.abcd.model.RecoveryAction.RESUME -> viewModel.resumeEngine()
+                                            com.aistudio.promptforge.abcd.model.RecoveryAction.RETRY -> viewModel.retryEngine()
+                                            com.aistudio.promptforge.abcd.model.RecoveryAction.EDIT -> {
+                                                navController.navigate(Screen.Vault.route)
+                                            }
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier.testTag("failure_action_directive_button")
+                                ) {
+                                    Text(failure.actionLabel, fontWeight = FontWeight.Bold)
+                                }
+                                OutlinedButton(
+                                    onClick = { viewModel.cancelEngine() },
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier.testTag("failure_cancel_button")
+                                ) {
+                                    Text("Dismiss / Cancel")
+                                }
                             }
                         }
                     }

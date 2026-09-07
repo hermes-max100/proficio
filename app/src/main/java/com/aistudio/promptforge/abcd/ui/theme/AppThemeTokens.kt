@@ -3,49 +3,68 @@ package com.aistudio.promptforge.abcd.ui.theme
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 /**
- * Multiple selectable theme modes as a unified design system:
- * - [SYSTEM]: Follows Android system dynamic light/dark preference.
- * - [DARK]: Default workspace — "AI control room" with charcoal surfaces, electric blue/violet accent, teal signals.
- * - [LIGHT]: Accessibility, daylight use — "clean professional workspace" with soft off-white canvas, slate text.
- * - [NEON]: Builder mode — deep graphite with cyan, violet, and magenta highlights; subtle state glow.
- * - [CYBERPUNK]: Night operator mode — deep black/navy base, magenta and acid-green telemetry signals.
+ * Perficio Theme Engine selectable theme modes:
+ * - [OBSIDIAN]: New default theme — dark, modern, subtle, with a restrained Perficio teal accent.
+ * - [DARK]: Preserved preset — deep charcoal surfaces with electric indigo/violet and teal cues.
+ * - [LIGHT]: Preserved preset — crisp daylight workspace, soft off-white canvas with slate text.
+ * - [NEON]: Preserved preset — builder mode, graphite base with cyan and violet state glow.
+ * - [CYBERPUNK]: Preserved preset — night operator mode, deep navy with vivid magenta and acid-green.
+ * - [CUSTOM]: Full user-engineered theme with live builder, appearance sliders, and token centralization.
+ * - [SYSTEM]: Legacy compatibility mapping to default theme.
  */
 enum class AppThemeMode(
     val title: String,
     val subtitle: String,
     val description: String
 ) {
-    SYSTEM(
-        title = "System Default",
-        subtitle = "Device Dynamic",
-        description = "Automatically follow Android system light or dark setting"
+    OBSIDIAN(
+        title = "Perficio Obsidian",
+        subtitle = "Default Studio",
+        description = "Dark, modern, subtle obsidian with restrained Perficio teal accents"
     ),
     DARK(
-        title = "AutoFlow Dark",
-        subtitle = "AI Control Room",
-        description = "Charcoal surfaces, electric blue/violet accents, and teal automation cues"
+        title = "Perficio Dark",
+        subtitle = "Control Room",
+        description = "Deep charcoal surfaces, electric violet accents, and clean automation cues"
     ),
     LIGHT(
-        title = "AutoFlow Light",
+        title = "Perficio Light",
         subtitle = "Clean Workspace",
         description = "Soft off-white canvas, slate text, and low visual noise for daylight focus"
     ),
     NEON(
-        title = "AutoFlow Neon",
+        title = "Perficio Neon",
         subtitle = "Builder Mode",
         description = "Deep graphite with cyan, violet, and magenta highlights; state glow indicators"
     ),
     CYBERPUNK(
-        title = "AutoFlow Cyberpunk",
+        title = "Perficio Cyberpunk",
         subtitle = "Night Operator",
         description = "Black/navy base, magenta and acid-green signals with high-contrast accents"
-    )
+    ),
+    CUSTOM(
+        title = "Custom Theme",
+        subtitle = "User Engineered",
+        description = "Full custom theme with customizable semantic colors, surface styles, and sliders"
+    ),
+    SYSTEM(
+        title = "System Default",
+        subtitle = "Device Dynamic",
+        description = "Legacy mode defaulting to Perficio Obsidian"
+    );
+
+    companion object {
+        val presets = listOf(OBSIDIAN, DARK, LIGHT, NEON, CYBERPUNK)
+    }
 }
 
 /**
  * Semantic theme tokens providing unified values across screens without hardcoding.
+ * Contrast-safe and augmented with appearance controls, typography scaling, and density.
  */
 data class AppThemeTokens(
     val background: Color,
@@ -60,10 +79,55 @@ data class AppThemeTokens(
     val error: Color,
     val border: Color,
     val focusRing: Color,
-    val isGlowEnabled: Boolean,
+    val onPrimary: Color = Color.White,
+    val onSecondary: Color = Color.White,
+    val onSurface: Color = textPrimary,
+    val onBackground: Color = textPrimary,
+    val isGlowEnabled: Boolean = false,
     val glowRunning: Color = accentSecondary,
     val glowGenerating: Color = accentPrimary,
-    val glowSuccess: Color = success
+    val glowSuccess: Color = success,
+    // Appearance & Layout Controls
+    val cornerRadius: Dp = 12.dp,
+    val surfaceStyle: SurfaceStyle = SurfaceStyle.ELEVATED,
+    val glowIntensity: Float = 0.5f,
+    val backgroundEffect: BackgroundEffect = BackgroundEffect.SUBTLE_GRADIENT,
+    val themeIntensity: Float = 0.75f, // 0.0f Clean to 1.0f Immersive
+    val fontScale: Float = 1.0f,
+    val density: ThemeDensity = ThemeDensity.COMFORTABLE
+)
+
+/**
+ * Perficio Obsidian: Dark, modern, subtle, with a restrained Perficio teal accent.
+ */
+val ObsidianThemeTokens = AppThemeTokens(
+    background = Color(0xFF090B10),
+    surface = Color(0xFF11151F),
+    surfaceElevated = Color(0xFF171D2B),
+    textPrimary = Color(0xFFF1F5F9),
+    textSecondary = Color(0xFF94A3B8),
+    accentPrimary = Color(0xFF00B4A0), // Restrained Perficio Teal
+    accentSecondary = Color(0xFF38BDF8),
+    success = Color(0xFF10B981),
+    warning = Color(0xFFF59E0B),
+    error = Color(0xFFEF4444),
+    border = Color(0xFF1F293D),
+    focusRing = Color(0xFF00B4A0),
+    onPrimary = Color.White,
+    onSecondary = Color(0xFF090B10),
+    onSurface = Color(0xFFF1F5F9),
+    onBackground = Color(0xFFF1F5F9),
+    isGlowEnabled = true,
+    glowIntensity = 0.4f,
+    glowRunning = Color(0xFF00B4A0),
+    glowGenerating = Color(0xFF38BDF8),
+    glowSuccess = Color(0xFF10B981),
+    cornerRadius = 12.dp,
+    surfaceStyle = SurfaceStyle.ELEVATED,
+    backgroundEffect = BackgroundEffect.SUBTLE_GRADIENT,
+    themeIntensity = 0.7f,
+    fontScale = 1.0f,
+    density = ThemeDensity.COMFORTABLE
 )
 
 val DarkThemeTokens = AppThemeTokens(
@@ -79,10 +143,19 @@ val DarkThemeTokens = AppThemeTokens(
     error = Color(0xFFFF6B6B),
     border = Color(0xFF283049),
     focusRing = Color(0xFF7C5CFF),
+    onPrimary = Color.White,
+    onSecondary = Color(0xFF0B0D12),
+    onSurface = Color(0xFFF3F5FF),
+    onBackground = Color(0xFFF3F5FF),
     isGlowEnabled = false,
+    glowIntensity = 0.3f,
     glowRunning = Color(0xFF24D6B5),
     glowGenerating = Color(0xFF7C5CFF),
-    glowSuccess = Color(0xFF24D6B5)
+    glowSuccess = Color(0xFF24D6B5),
+    cornerRadius = 12.dp,
+    surfaceStyle = SurfaceStyle.ELEVATED,
+    backgroundEffect = BackgroundEffect.SUBTLE_GRADIENT,
+    themeIntensity = 0.7f
 )
 
 val LightThemeTokens = AppThemeTokens(
@@ -98,10 +171,19 @@ val LightThemeTokens = AppThemeTokens(
     error = Color(0xFFC62828),
     border = Color(0xFFDDE1EB),
     focusRing = Color(0xFF5B3FD1),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onSurface = Color(0xFF151722),
+    onBackground = Color(0xFF151722),
     isGlowEnabled = false,
+    glowIntensity = 0.0f,
     glowRunning = Color(0xFF008A73),
     glowGenerating = Color(0xFF5B3FD1),
-    glowSuccess = Color(0xFF008A73)
+    glowSuccess = Color(0xFF008A73),
+    cornerRadius = 10.dp,
+    surfaceStyle = SurfaceStyle.FLAT,
+    backgroundEffect = BackgroundEffect.SOLID,
+    themeIntensity = 0.4f
 )
 
 val NeonThemeTokens = AppThemeTokens(
@@ -117,10 +199,19 @@ val NeonThemeTokens = AppThemeTokens(
     error = Color(0xFFFF4D8D),
     border = Color(0xFF2A3F6D),
     focusRing = Color(0xFF00E5FF),
+    onPrimary = Color(0xFF070812),
+    onSecondary = Color.White,
+    onSurface = Color(0xFFEAFBFF),
+    onBackground = Color(0xFFEAFBFF),
     isGlowEnabled = true,
+    glowIntensity = 0.85f,
     glowRunning = Color(0xFF00E5FF),
     glowGenerating = Color(0xFFA855F7),
-    glowSuccess = Color(0xFF00E5FF)
+    glowSuccess = Color(0xFF00E5FF),
+    cornerRadius = 14.dp,
+    surfaceStyle = SurfaceStyle.GLASS,
+    backgroundEffect = BackgroundEffect.MESH_RADIAL,
+    themeIntensity = 0.95f
 )
 
 val CyberpunkThemeTokens = AppThemeTokens(
@@ -136,11 +227,20 @@ val CyberpunkThemeTokens = AppThemeTokens(
     error = Color(0xFFFF4F81),
     border = Color(0xFF56265B),
     focusRing = Color(0xFFFF2BD6),
+    onPrimary = Color.White,
+    onSecondary = Color(0xFF05030B),
+    onSurface = Color(0xFFFFF1FC),
+    onBackground = Color(0xFFFFF1FC),
     isGlowEnabled = true,
+    glowIntensity = 0.9f,
     glowRunning = Color(0xFFB6FF00),
     glowGenerating = Color(0xFFFF2BD6),
-    glowSuccess = Color(0xFFB6FF00)
+    glowSuccess = Color(0xFFB6FF00),
+    cornerRadius = 8.dp,
+    surfaceStyle = SurfaceStyle.OUTLINE,
+    backgroundEffect = BackgroundEffect.DOT_GRID,
+    themeIntensity = 1.0f
 )
 
-val LocalAppThemeTokens = staticCompositionLocalOf { DarkThemeTokens }
-val LocalThemeMode = compositionLocalOf { AppThemeMode.SYSTEM }
+val LocalAppThemeTokens = staticCompositionLocalOf { ObsidianThemeTokens }
+val LocalThemeMode = compositionLocalOf { AppThemeMode.OBSIDIAN }

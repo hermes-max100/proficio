@@ -71,9 +71,9 @@ enum class ImportType(val title: String, val description: String) {
     PROMPT("Prompt", "Import a structured prompt template into Room"),
     SKILL("Skill", "Import an autonomous agent skill with Python instructions"),
     MCP("MCP Tool", "Import a FastMCP server or client tool configuration"),
-    PACK("Agent Pack", "Import an entire AutoFlow agent specification pack"),
+    PACK("Agent Pack", "Import an entire Perficio agent specification pack"),
     HISTORY("History Log", "Import an external execution run into Room history"),
-    BUNDLE("JSON Bundle", "Import a full AutoForge data portability archive")
+    BUNDLE("JSON Bundle", "Import a full Perficio data portability archive")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

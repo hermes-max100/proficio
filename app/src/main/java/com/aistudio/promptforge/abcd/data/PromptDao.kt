@@ -150,4 +150,32 @@ interface PromptDao {
 
     @Query("UPDATE llm_credentials SET isActive = 1 WHERE id = :id")
     suspend fun activateLlmCredential(id: String)
+
+    // Durable Autonomous Runs
+    @Query("SELECT * FROM durable_runs ORDER BY updatedAt DESC")
+    fun getAllDurableRuns(): Flow<List<DurableRunEntity>>
+
+    @Query("SELECT * FROM durable_runs WHERE id = :id")
+    fun getDurableRunById(id: String): Flow<DurableRunEntity?>
+
+    @Query("SELECT * FROM durable_runs WHERE id = :id")
+    suspend fun getDurableRunByIdSync(id: String): DurableRunEntity?
+
+    @Query("SELECT * FROM durable_runs WHERE idempotencyKey = :key AND state IN ('PENDING', 'RUNNING', 'PAUSED') LIMIT 1")
+    suspend fun findActiveRunByIdempotencyKey(key: String): DurableRunEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateDurableRun(run: DurableRunEntity)
+
+    @Query("UPDATE durable_runs SET state = :newState, updatedAt = :updatedAt WHERE id = :id")
+    suspend fun updateRunState(id: String, newState: String, updatedAt: Long = System.currentTimeMillis())
+
+    @Query("UPDATE durable_runs SET state = 'PAUSED', updatedAt = :updatedAt WHERE state IN ('PENDING', 'RUNNING')")
+    suspend fun pauseAllActiveRuns(updatedAt: Long = System.currentTimeMillis())
+
+    @Query("DELETE FROM durable_runs WHERE id = :id")
+    suspend fun deleteDurableRun(id: String)
+
+    @Query("DELETE FROM durable_runs")
+    suspend fun clearAllDurableRuns()
 }

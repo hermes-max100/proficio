@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Icon
@@ -33,6 +34,7 @@ import com.aistudio.promptforge.abcd.ui.screens.PluginForgeScreen
 import com.aistudio.promptforge.abcd.ui.screens.PromptForgeScreen
 import com.aistudio.promptforge.abcd.ui.screens.PromptRepositoryScreen
 import com.aistudio.promptforge.abcd.ui.screens.SkillForgeScreen
+import com.aistudio.promptforge.abcd.ui.screens.ThemeBuilderScreen
 import com.aistudio.promptforge.abcd.ui.screens.VaultScreen
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
@@ -45,6 +47,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Vault : Screen("vault", "Vault", Icons.Filled.Inventory)
     object History : Screen("history", "History", Icons.Filled.History)
     object ImportForm : Screen("import_form", "Import", Icons.Filled.UploadFile)
+    object ThemeBuilder : Screen("theme_builder", "Theme Studio", Icons.Filled.Palette)
 }
 
 val navItems = listOf(
@@ -110,6 +113,9 @@ fun AppNavigation(viewModel: MainViewModel) {
                     onNavigateToVault = { navController.navigate(Screen.Vault.route) },
                     onNavigateToHistory = { navController.navigate(Screen.History.route) }
                 )
+            }
+            composable(Screen.ThemeBuilder.route) {
+                ThemeBuilderScreen(viewModel = viewModel, navController = navController)
             }
         }
     }

@@ -27,8 +27,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val themeMode by themeManager.themeMode.collectAsState()
+            val activeCustomTheme by themeManager.activeCustomTheme.collectAsState()
             val glowEnabled by themeManager.glowEffectsEnabled.collectAsState()
-            AutoFlowTheme(themeMode = themeMode, glowEnabled = glowEnabled) {
+            AutoFlowTheme(
+                themeMode = themeMode,
+                customConfig = activeCustomTheme,
+                glowEnabled = glowEnabled
+            ) {
                 AppNavigation(viewModel)
             }
         }

@@ -1,6 +1,6 @@
 {
-  "name": "AutoFlow",
-  "description": "Professional autonomous prompt creation, skills, and tooling control platform.",
+  "name": "Perficio",
+  "description": "Perficio - Autonomous prompt creation, skills, tooling control, and theme engine platform.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

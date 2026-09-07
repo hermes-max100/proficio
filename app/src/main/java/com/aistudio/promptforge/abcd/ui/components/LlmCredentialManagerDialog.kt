@@ -249,6 +249,15 @@ fun LlmCredentialManagerDialog(
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
+                                            if (cred.credentialValue.isNotBlank()) {
+                                                Text(
+                                                    text = "Secret: ${cred.maskedValue}",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    fontFamily = FontFamily.Monospace,
+                                                    fontSize = 10.sp,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                                                )
+                                            }
 
                                             if (cred.lastTestedAt > 0) {
                                                 Text(
