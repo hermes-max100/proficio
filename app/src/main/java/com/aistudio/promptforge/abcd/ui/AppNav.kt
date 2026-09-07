@@ -7,8 +7,10 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -41,13 +43,15 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object SkillForge : Screen("skill_forge", "Skills", Icons.Filled.Psychology)
     object PluginForge : Screen("plugin_forge", "Plugins", Icons.Filled.Extension)
     object Vault : Screen("vault", "Vault", Icons.Filled.Inventory)
+    object History : Screen("history", "History", Icons.Filled.History)
+    object ImportForm : Screen("import_form", "Import", Icons.Filled.UploadFile)
 }
 
 val navItems = listOf(
     Screen.Dashboard,
-    Screen.PromptRepository,
     Screen.PromptForge,
     Screen.Engine,
+    Screen.History,
     Screen.Vault
 )
 
@@ -93,6 +97,20 @@ fun AppNavigation(viewModel: MainViewModel) {
             composable(Screen.SkillForge.route) { SkillForgeScreen(viewModel, navController) }
             composable(Screen.PluginForge.route) { PluginForgeScreen(viewModel, navController) }
             composable(Screen.Vault.route) { VaultScreen(viewModel, navController) }
+            composable(Screen.History.route) {
+                HistoryScreen(
+                    viewModel = viewModel,
+                    onNavigateToPromptStudio = { navController.navigate(Screen.PromptForge.route) },
+                    onNavigateToImport = { navController.navigate(Screen.ImportForm.route) }
+                )
+            }
+            composable(Screen.ImportForm.route) {
+                ImportFormScreen(
+                    viewModel = viewModel,
+                    onNavigateToVault = { navController.navigate(Screen.Vault.route) },
+                    onNavigateToHistory = { navController.navigate(Screen.History.route) }
+                )
+            }
         }
     }
 }

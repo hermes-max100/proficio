@@ -11,6 +11,9 @@ import com.aistudio.promptforge.abcd.api.Part
 import com.aistudio.promptforge.abcd.api.PromptForgeApiService
 import com.aistudio.promptforge.abcd.api.RetrofitClient
 import com.aistudio.promptforge.abcd.api.SupportedModels
+import com.aistudio.promptforge.abcd.api.ConnectionTestResult
+import com.aistudio.promptforge.abcd.api.UniversalLlmResult
+import com.aistudio.promptforge.abcd.api.UniversalLlmService
 import com.aistudio.promptforge.abcd.api.provider.GeminiDirectProvider
 import com.aistudio.promptforge.abcd.api.provider.ProviderManager
 import com.aistudio.promptforge.abcd.data.repository.PromptRevisionRepository
@@ -143,6 +146,45 @@ class PromptRepository(
         apiService.setCustomKey(key)
     }
 
+    // LLM Credentials & BYOK / OAuth in Room
+    fun getAllLlmCredentials(): Flow<List<LlmCredentialEntity>> = dao.getAllLlmCredentials()
+    fun getActiveLlmCredential(): Flow<LlmCredentialEntity?> = dao.getActiveLlmCredential()
+    suspend fun getActiveLlmCredentialSync(): LlmCredentialEntity? = dao.getActiveLlmCredentialSync()
+
+    suspend fun saveLlmCredential(credential: LlmCredentialEntity) {
+        if (credential.isActive) {
+            dao.deactivateAllLlmCredentials()
+        }
+        dao.insertLlmCredential(credential)
+        if (credential.providerType == "GEMINI" && credential.authType == "API_KEY") {
+            apiService.setCustomKey(credential.credentialValue)
+        }
+    }
+
+    suspend fun setActiveLlmCredential(id: String) {
+        dao.deactivateAllLlmCredentials()
+        dao.activateLlmCredential(id)
+        val active = dao.getActiveLlmCredentialSync()
+        if (active != null && active.providerType == "GEMINI" && active.authType == "API_KEY") {
+            apiService.setCustomKey(active.credentialValue)
+        }
+    }
+
+    suspend fun deleteLlmCredential(id: String) {
+        dao.deleteLlmCredential(id)
+    }
+
+    suspend fun testLlmCredential(credential: LlmCredentialEntity): ConnectionTestResult {
+        val result = UniversalLlmService.testCredential(credential)
+        val updated = credential.copy(
+            lastTestedAt = System.currentTimeMillis(),
+            lastLatencyMs = result.latencyMs,
+            isHealthy = result.isSuccess
+        )
+        dao.insertLlmCredential(updated)
+        return result
+    }
+
     // Playground Runs
     fun getPlaygroundRuns(): Flow<List<PlaygroundRun>> = dao.getAllPlaygroundRuns()
     suspend fun insertPlaygroundRun(run: PlaygroundRun) = dao.insertPlaygroundRun(run)
@@ -177,6 +219,43 @@ class PromptRepository(
         val promptCombined = if (!system.isNullOrBlank()) "$system\n$user" else user
         val promptWords = promptCombined.trim().split("\\s+".toRegex()).filter { it.isNotBlank() }.size
         val promptChars = promptCombined.length
+
+        // Check if there is an active BYOK or OAuth credential in Room
+        val activeCredential = dao.getActiveLlmCredentialSync()
+        if (activeCredential != null && (activeCredential.providerType != "GEMINI" || activeCredential.authType != "API_KEY" || activeCredential.credentialValue.isNotBlank())) {
+            val universalResult = UniversalLlmService.execute(
+                prompt = user,
+                systemInstruction = system,
+                credential = activeCredential,
+                overrideModel = if (model != SupportedModels.FLASH_LATEST) model else null,
+                temperature = temperature,
+                maxTokens = maxTokens
+            )
+            if (universalResult.isSuccess) {
+                val sanitized = AiOutputValidator.sanitizeAndValidate(universalResult.text).sanitizedText
+                val outputWords = sanitized.trim().split("\\s+".toRegex()).filter { it.isNotBlank() }.size
+                return@withContext AiResult.Success(
+                    data = sanitized,
+                    metrics = GenerationMetrics(
+                        latencyMs = universalResult.latencyMs,
+                        promptTokens = universalResult.promptTokens,
+                        outputTokens = universalResult.outputTokens,
+                        totalTokens = universalResult.totalTokens,
+                        isEstimated = false,
+                        promptChars = promptChars,
+                        promptWords = promptWords,
+                        outputChars = sanitized.length,
+                        outputWords = outputWords
+                    ),
+                    isFallback = false
+                )
+            } else if (!apiService.isApiKeyConfigured()) {
+                return@withContext AiResult.Error(
+                    message = universalResult.errorMessage ?: "LLM generation failed",
+                    appError = AppError.generic(universalResult.errorMessage ?: "LLM generation failed")
+                )
+            }
+        }
 
         if (!apiService.isApiKeyConfigured()) {
             val fallbackText = AutoForgeEngine.generateLocalPrompt10OutOf10(user)

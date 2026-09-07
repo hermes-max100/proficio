@@ -84,6 +84,7 @@ import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.UploadFile
 import com.aistudio.promptforge.abcd.data.AutoForgePack
 import com.aistudio.promptforge.abcd.data.SavedMcp
 import com.aistudio.promptforge.abcd.data.SavedPrompt
@@ -243,6 +244,26 @@ fun VaultScreen(
                             Icons.Filled.Security,
                             contentDescription = "AI Provider & Proxy Gateway",
                             tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(
+                        onClick = { navController.navigate(Screen.ImportForm.route) },
+                        modifier = Modifier.testTag("vault_open_import_form_button")
+                    ) {
+                        Icon(
+                            Icons.Filled.UploadFile,
+                            contentDescription = "Import to Room Database",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(
+                        onClick = { navController.navigate(Screen.History.route) },
+                        modifier = Modifier.testTag("vault_open_history_screen_button")
+                    ) {
+                        Icon(
+                            Icons.Filled.History,
+                            contentDescription = "Execution Provenance History",
+                            tint = MaterialTheme.colorScheme.tertiary
                         )
                     }
                     IconButton(

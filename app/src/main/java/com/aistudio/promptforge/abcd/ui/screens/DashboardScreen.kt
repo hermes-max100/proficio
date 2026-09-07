@@ -39,8 +39,10 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.NetworkCheck
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
@@ -48,6 +50,8 @@ import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
@@ -67,6 +71,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -96,6 +101,7 @@ import com.aistudio.promptforge.abcd.ui.MainViewModel
 import com.aistudio.promptforge.abcd.ui.Screen
 import com.aistudio.promptforge.abcd.ui.components.ApiDiagnosticsDialog
 import com.aistudio.promptforge.abcd.ui.components.ErrorBanner
+import com.aistudio.promptforge.abcd.ui.components.LlmCredentialManagerDialog
 import com.aistudio.promptforge.abcd.ui.components.ThemeSelectorDialog
 import com.aistudio.promptforge.abcd.ui.theme.AppThemeMode
 import com.aistudio.promptforge.abcd.ui.theme.ThemeManager
@@ -120,7 +126,25 @@ fun DashboardScreen(
     var activeInputGoal by remember { mutableStateOf(goalInput) }
     var showDiagnosticsDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showLlmCredentialDialog by remember { mutableStateOf(false) }
+
+    val llmCredentials by viewModel.llmCredentials.collectAsState()
+    val activeLlmCredential by viewModel.activeLlmCredential.collectAsState()
+    val executionHistory by viewModel.executionHistory.collectAsState()
+
     val totalSavedCount = savedPacks.size + savedPrompts.size + savedSkills.size + savedMcps.size
+
+    if (showLlmCredentialDialog) {
+        LlmCredentialManagerDialog(
+            credentials = llmCredentials,
+            activeCredential = activeLlmCredential,
+            onSaveCredential = { viewModel.saveLlmCredential(it) },
+            onSetActive = { viewModel.setActiveLlmCredential(it) },
+            onDelete = { viewModel.deleteLlmCredential(it) },
+            onTestCredential = { viewModel.testLlmCredential(it) },
+            onDismiss = { showLlmCredentialDialog = false }
+        )
+    }
 
     if (showDiagnosticsDialog) {
         ApiDiagnosticsDialog(
@@ -198,6 +222,49 @@ fun DashboardScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { showLlmCredentialDialog = true },
+                        modifier = Modifier.testTag("dashboard_llm_credentials_button")
+                    ) {
+                        Icon(
+                            Icons.Filled.Key,
+                            contentDescription = "BYOK / Multi-LLM Credentials",
+                            tint = if (activeLlmCredential != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(
+                        onClick = { navController.navigate(Screen.ImportForm.route) },
+                        modifier = Modifier.testTag("dashboard_import_button")
+                    ) {
+                        Icon(
+                            Icons.Filled.UploadFile,
+                            contentDescription = "Import Data to Room",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(
+                        onClick = { navController.navigate(Screen.History.route) },
+                        modifier = Modifier.testTag("dashboard_history_button")
+                    ) {
+                        BadgedBox(
+                            badge = {
+                                if (executionHistory.isNotEmpty()) {
+                                    Badge(
+                                        containerColor = MaterialTheme.colorScheme.secondary,
+                                        contentColor = MaterialTheme.colorScheme.onSecondary
+                                    ) {
+                                        Text("${executionHistory.size}")
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                Icons.Filled.History,
+                                contentDescription = "Execution History",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                     IconButton(
                         onClick = { showThemeDialog = true },
                         modifier = Modifier.testTag("dashboard_theme_button")
@@ -437,6 +504,146 @@ fun DashboardScreen(
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(12.dp)
                                 )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ----------------------------------------------------
+            // MULTI-LLM (BYOK) & ROOM DATA OPERATIONS
+            // ----------------------------------------------------
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("dashboard_multi_llm_room_card"),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(MaterialTheme.colorScheme.tertiaryContainer),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Key,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Spacer(Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        "Multi-LLM & Room Operations",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                    )
+                                    Text(
+                                        "BYOK / OAuth Multi-Provider • Local Room Database",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = if (activeLlmCredential != null) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+                            ) {
+                                Text(
+                                    text = if (activeLlmCredential != null) activeLlmCredential!!.providerType else "GEMINI DIRECT",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp
+                                    ),
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(Modifier.height(10.dp))
+
+                        // Active provider details banner
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = MaterialTheme.colorScheme.surface,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = if (activeLlmCredential != null) "Active: ${activeLlmCredential!!.name}" else "Active: Default Gemini 3.5 Flash",
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        text = if (activeLlmCredential != null) "${activeLlmCredential!!.defaultModel} • ${activeLlmCredential!!.authType}" else "Cloud Native • Direct API Key",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                TextButton(onClick = { showLlmCredentialDialog = true }) {
+                                    Text("Change LLM", fontSize = 11.sp)
+                                }
+                            }
+                        }
+
+                        Spacer(Modifier.height(10.dp))
+
+                        // Fast action buttons: History, Import, BYOK Manager
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = { navController.navigate(Screen.History.route) },
+                                modifier = Modifier.weight(1f).height(38.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp)
+                            ) {
+                                Icon(Icons.Filled.History, contentDescription = null, modifier = Modifier.size(15.dp))
+                                Spacer(Modifier.width(4.dp))
+                                Text("History (${executionHistory.size})", fontSize = 11.sp, maxLines = 1)
+                            }
+
+                            OutlinedButton(
+                                onClick = { navController.navigate(Screen.ImportForm.route) },
+                                modifier = Modifier.weight(1f).height(38.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp)
+                            ) {
+                                Icon(Icons.Filled.UploadFile, contentDescription = null, modifier = Modifier.size(15.dp))
+                                Spacer(Modifier.width(4.dp))
+                                Text("Import Data", fontSize = 11.sp, maxLines = 1)
+                            }
+
+                            Button(
+                                onClick = { showLlmCredentialDialog = true },
+                                modifier = Modifier.weight(1f).height(38.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp)
+                            ) {
+                                Icon(Icons.Filled.Key, contentDescription = null, modifier = Modifier.size(15.dp))
+                                Spacer(Modifier.width(4.dp))
+                                Text("BYOK Key", fontSize = 11.sp, maxLines = 1)
                             }
                         }
                     }

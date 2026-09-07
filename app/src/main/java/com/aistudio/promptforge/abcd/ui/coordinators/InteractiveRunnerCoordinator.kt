@@ -161,42 +161,46 @@ class InteractiveRunnerCoordinator(
                     }
                     if (promptId != null) {
                         repository.recordPromptExecution(promptId, result.metrics.latencyMs)
-                        repository.provenanceRepository.recordRun(
-                            promptId = promptId,
-                            promptTitle = promptTitle ?: "Prompt Run",
-                            selectedModel = model,
-                            temperature = temperature,
-                            maxTokens = maxTokens,
-                            latencyMs = result.metrics.latencyMs,
-                            tokensPrompt = result.metrics.promptTokens,
-                            tokensOutput = result.metrics.outputTokens,
-                            sanitizedOutput = result.data,
-                            rawOutput = result.data,
-                            resolvedVariables = appliedVariables,
-                            status = if (result.isFallback) ProvenanceStatus.FALLBACK_LOCAL else ProvenanceStatus.SUCCESS
-                        )
                     }
+                    val effectiveId = promptId ?: UUID.randomUUID().toString()
+                    val effectiveTitle = promptTitle?.ifBlank { null }
+                        ?: promptText.take(40).replace("\n", " ").trim()
+                    repository.provenanceRepository.recordRun(
+                        promptId = effectiveId,
+                        promptTitle = effectiveTitle,
+                        selectedModel = model,
+                        temperature = temperature,
+                        maxTokens = maxTokens,
+                        latencyMs = result.metrics.latencyMs,
+                        tokensPrompt = result.metrics.promptTokens,
+                        tokensOutput = result.metrics.outputTokens,
+                        sanitizedOutput = result.data,
+                        rawOutput = result.data,
+                        resolvedVariables = appliedVariables,
+                        status = if (result.isFallback) ProvenanceStatus.FALLBACK_LOCAL else ProvenanceStatus.SUCCESS
+                    )
                 }
                 is AiResult.Error -> {
                     _promptExecutionOutput.value = "Error executing prompt: ${result.message}"
                     _promptExecutionNotice.value = result.appError ?: AppError.generic(result.message)
-                    if (promptId != null) {
-                        repository.provenanceRepository.recordRun(
-                            promptId = promptId,
-                            promptTitle = promptTitle ?: "Prompt Run",
-                            selectedModel = model,
-                            temperature = temperature,
-                            maxTokens = maxTokens,
-                            latencyMs = 0,
-                            tokensPrompt = 0,
-                            tokensOutput = 0,
-                            sanitizedOutput = result.message,
-                            rawOutput = result.message,
-                            resolvedVariables = appliedVariables,
-                            status = ProvenanceStatus.FAILED,
-                            errorReason = result.message
-                        )
-                    }
+                    val effectiveId = promptId ?: UUID.randomUUID().toString()
+                    val effectiveTitle = promptTitle?.ifBlank { null }
+                        ?: promptText.take(40).replace("\n", " ").trim()
+                    repository.provenanceRepository.recordRun(
+                        promptId = effectiveId,
+                        promptTitle = effectiveTitle,
+                        selectedModel = model,
+                        temperature = temperature,
+                        maxTokens = maxTokens,
+                        latencyMs = 0,
+                        tokensPrompt = 0,
+                        tokensOutput = 0,
+                        sanitizedOutput = result.message,
+                        rawOutput = result.message,
+                        resolvedVariables = appliedVariables,
+                        status = ProvenanceStatus.FAILED,
+                        errorReason = result.message
+                    )
                 }
             }
         }

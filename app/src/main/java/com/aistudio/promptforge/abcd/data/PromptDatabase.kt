@@ -16,9 +16,10 @@ import androidx.room.RoomDatabase
         FavoritePrompt::class,
         PromptStat::class,
         PromptRevisionEntity::class,
-        ExecutionProvenanceEntity::class
+        ExecutionProvenanceEntity::class,
+        LlmCredentialEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class PromptDatabase : RoomDatabase() {

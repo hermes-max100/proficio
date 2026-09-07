@@ -128,4 +128,26 @@ interface PromptDao {
 
     @Query("DELETE FROM execution_provenance WHERE id = :id")
     suspend fun deleteExecutionProvenanceById(id: String)
+
+    // LLM Credentials & BYOK / OAuth
+    @Query("SELECT * FROM llm_credentials ORDER BY createdAt DESC")
+    fun getAllLlmCredentials(): Flow<List<LlmCredentialEntity>>
+
+    @Query("SELECT * FROM llm_credentials WHERE isActive = 1 LIMIT 1")
+    fun getActiveLlmCredential(): Flow<LlmCredentialEntity?>
+
+    @Query("SELECT * FROM llm_credentials WHERE isActive = 1 LIMIT 1")
+    suspend fun getActiveLlmCredentialSync(): LlmCredentialEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLlmCredential(credential: LlmCredentialEntity)
+
+    @Query("DELETE FROM llm_credentials WHERE id = :id")
+    suspend fun deleteLlmCredential(id: String)
+
+    @Query("UPDATE llm_credentials SET isActive = 0")
+    suspend fun deactivateAllLlmCredentials()
+
+    @Query("UPDATE llm_credentials SET isActive = 1 WHERE id = :id")
+    suspend fun activateLlmCredential(id: String)
 }

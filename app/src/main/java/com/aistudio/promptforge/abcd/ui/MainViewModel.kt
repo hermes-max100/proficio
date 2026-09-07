@@ -12,6 +12,12 @@ import com.aistudio.promptforge.abcd.data.PromptRepository
 import com.aistudio.promptforge.abcd.data.PromptStat
 import com.aistudio.promptforge.abcd.data.SavedMcp
 import com.aistudio.promptforge.abcd.data.SavedPrompt
+import com.aistudio.promptforge.abcd.api.ConnectionTestResult
+import com.aistudio.promptforge.abcd.data.LlmCredentialEntity
+import com.aistudio.promptforge.abcd.model.ExecutionProvenanceRecord
+import com.aistudio.promptforge.abcd.model.ProvenanceStatus
+import com.aistudio.promptforge.abcd.util.ImportResult
+import java.util.UUID
 import com.aistudio.promptforge.abcd.data.SavedSkill
 import com.aistudio.promptforge.abcd.model.AppError
 import com.aistudio.promptforge.abcd.model.AutoForgePackData
@@ -70,6 +76,15 @@ class MainViewModel(
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val playgroundRuns: StateFlow<List<PlaygroundRun>> = repository.getPlaygroundRuns()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val llmCredentials: StateFlow<List<LlmCredentialEntity>> = repository.getAllLlmCredentials()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val activeLlmCredential: StateFlow<LlmCredentialEntity?> = repository.getActiveLlmCredential()
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val executionHistory: StateFlow<List<ExecutionProvenanceRecord>> = repository.provenanceRepository.getAllProvenance()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // ==========================================
@@ -346,6 +361,133 @@ class MainViewModel(
         framework: String,
         templateText: String
     ) = runnerCoordinator.createCustomRepoPrompt(title, framework, templateText)
+
+    // ==========================================
+    // LLM CREDENTIALS & BYOK / OAUTH
+    // ==========================================
+    fun saveLlmCredential(credential: LlmCredentialEntity) = viewModelScope.launch {
+        repository.saveLlmCredential(credential)
+    }
+
+    fun setActiveLlmCredential(id: String) = viewModelScope.launch {
+        repository.setActiveLlmCredential(id)
+    }
+
+    fun deleteLlmCredential(id: String) = viewModelScope.launch {
+        repository.deleteLlmCredential(id)
+    }
+
+    suspend fun testLlmCredential(credential: LlmCredentialEntity): ConnectionTestResult {
+        return repository.testLlmCredential(credential)
+    }
+
+    // ==========================================
+    // EXECUTION PROVENANCE & RUN HISTORY
+    // ==========================================
+    fun deleteExecutionProvenance(id: String) = viewModelScope.launch {
+        repository.provenanceRepository.deleteProvenanceById(id)
+    }
+
+    fun clearAllExecutionHistory() = viewModelScope.launch {
+        repository.provenanceRepository.clearAllProvenance()
+    }
+
+    // ==========================================
+    // SINGLE ITEM IMPORT INTO ROOM DATABASE
+    // ==========================================
+    suspend fun importSinglePrompt(
+        title: String,
+        framework: String,
+        templateText: String
+    ) {
+        val newPrompt = SavedPrompt(
+            id = UUID.randomUUID().toString(),
+            title = title.ifBlank { "Imported Prompt" },
+            frameworkId = framework.ifBlank { "Custom" },
+            fieldsJson = "{}",
+            assembled = templateText,
+            system = "You are a professional AI assistant.",
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis()
+        )
+        repository.insertSavedPrompt(newPrompt)
+    }
+
+    suspend fun importSingleSkill(
+        title: String,
+        slug: String,
+        category: String,
+        trigger: String,
+        code: String,
+        markdown: String
+    ) {
+        val newSkill = SavedSkill(
+            id = UUID.randomUUID().toString(),
+            title = title.ifBlank { "Imported Skill" },
+            slug = slug.ifBlank { title.lowercase().replace("\\s+".toRegex(), "-") },
+            category = category.ifBlank { "Custom" },
+            description = "Imported agent skill for $title",
+            trigger = trigger.ifBlank { "custom, agent, workflow" },
+            source = "Imported",
+            implementationCode = code,
+            skillMarkdown = markdown.ifBlank { "# $title\nImported custom agent skill." },
+            createdAt = System.currentTimeMillis()
+        )
+        repository.insertSavedSkill(newSkill)
+    }
+
+    suspend fun importSingleMcp(
+        name: String,
+        category: String,
+        description: String,
+        configJson: String,
+        code: String
+    ) {
+        val newMcp = SavedMcp(
+            id = UUID.randomUUID().toString(),
+            name = name.ifBlank { "Imported-MCP-Server" },
+            category = category.ifBlank { "Custom" },
+            description = description.ifBlank { "Imported FastMCP server tool" },
+            toolsCount = 1,
+            mcpJsonConfig = configJson.ifBlank { "{}" },
+            serverCode = code,
+            createdAt = System.currentTimeMillis()
+        )
+        repository.insertSavedMcp(newMcp)
+    }
+
+    suspend fun importSinglePack(pack: AutoForgePack) {
+        repository.insertAutoForgePack(pack)
+    }
+
+    suspend fun importSingleHistoryRun(
+        promptTitle: String,
+        model: String,
+        promptText: String,
+        outputText: String,
+        latencyMs: Long,
+        tokensPrompt: Int,
+        tokensOutput: Int
+    ) {
+        repository.provenanceRepository.recordRun(
+            promptId = UUID.randomUUID().toString(),
+            promptTitle = promptTitle.ifBlank { "Imported Execution" },
+            selectedModel = model.ifBlank { SupportedModels.FLASH_LATEST },
+            temperature = 0.4f,
+            maxTokens = 1500,
+            latencyMs = latencyMs,
+            tokensPrompt = tokensPrompt,
+            tokensOutput = tokensOutput,
+            sanitizedOutput = outputText,
+            rawOutput = outputText,
+            resolvedVariables = emptyMap(),
+            status = ProvenanceStatus.SUCCESS
+        )
+    }
+
+    suspend fun importRawBundle(jsonString: String): ImportResult {
+        return repository.vaultDataRepository.importBundle(jsonString)
+    }
 
     // ==========================================
     // COMMON UTILITIES & PERSISTENCE HELPERS

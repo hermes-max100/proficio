@@ -139,3 +139,20 @@ data class ExecutionProvenanceEntity(
     val errorReason: String? = null
 )
 
+@Entity(tableName = "llm_credentials")
+@Serializable
+data class LlmCredentialEntity(
+    @PrimaryKey val id: String,
+    val name: String,
+    val providerType: String, // "GEMINI", "OPENAI", "ANTHROPIC", "CUSTOM"
+    val authType: String, // "API_KEY", "OAUTH_BEARER"
+    val credentialValue: String,
+    val endpointUrl: String = "",
+    val defaultModel: String = "",
+    val isActive: Boolean = false,
+    val createdAt: Long = System.currentTimeMillis(),
+    val lastTestedAt: Long = 0,
+    val isHealthy: Boolean = false,
+    val lastLatencyMs: Long = 0
+)
+
