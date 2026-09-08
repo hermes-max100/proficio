@@ -1,7 +1,6 @@
 {
-  "name": "Perficio",
-  "description": "Perficio - Autonomous prompt creation, skills, tooling control, and theme engine platform.",
+  "name": "Proficio",
+  "description": "Proficio - Autonomous prompt creation, skills, tooling control, and theme engine platform.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
-

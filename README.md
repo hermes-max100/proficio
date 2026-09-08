@@ -1,4 +1,4 @@
-# AutoFlow (Android Edition)
+# Proficio (Android Edition)
 
 A professional prompt-creation, skills, and tooling control platform for autonomous AI operations, built with Kotlin and Jetpack Compose.
 
@@ -9,4 +9,3 @@ A professional prompt-creation, skills, and tooling control platform for autonom
 - **Appearance & Themes**: Production Jetpack Compose theme system supporting System Dynamic, AutoFlow Dark ("AI control room"), AutoFlow Light ("clean workspace"), AutoFlow Neon ("builder mode"), and AutoFlow Cyberpunk ("night operator").
 - **Agent Vault**: Encrypted local persistence powered by Room DB for prompt templates, skills, MCP plugins, and execution packs.
 - **Provider-Aware Execution**: Live execution with telemetry provenance, resilient retry policies with exponential backoff, and strict output sanitization.
-

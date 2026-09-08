@@ -1,5 +1,5 @@
 {
-  "name": "promptforge-android",
+  "name": "proficio-android",
   "version": "1.0.0",
   "scripts": {
     "build": "echo 'Android source code successfully generated. (Node build bypassed)'",
