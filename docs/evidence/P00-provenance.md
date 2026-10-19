@@ -26,3 +26,14 @@ UNVERIFIED / NOT RUN
 ## Needed from owner (P00 gate: owner_approval_if_superseding)
 Either (a) point to a location for the frozen 1.6.0 tree/archive, or (b) approve a
 superseding baseline. Neither has been given; downstream P01+ stay gated on P00.
+
+## Update 2026-10-19 (owner granted file access; Penguin searched)
+- Hash scan of `manifest*.json`, `*.zip`, `*.tar.gz`, `*.bundle` (<200MB, excluding
+  node_modules/.cache/.git/ai_agent_env) under `/home/riveracarmeloiii`: 0 files with
+  sha256 `800b9e68…7c72`. Text grep of proficio, proficio_markdown, Rendezvous,
+  rendezvous: 0 hits (the grep ran under a 2 s timeout, so it is weak evidence).
+- Present on host: `workspace/skills/proficio` (0.1.0 bootstrap), `proficio-phase8-v3`
+  (protocol docs only), `Rendezvous/mission-control/proficio-bridge-20261012`,
+  `~/proficio` (= Android repo @ ce05f24). None is the frozen 1.6.0 tree.
+- P00 remains BLOCKED. Not searched: other devices, cloud drives, git history/branches,
+  `.git` object stores, large archives.
