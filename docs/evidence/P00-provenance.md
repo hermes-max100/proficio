@@ -37,3 +37,20 @@ superseding baseline. Neither has been given; downstream P01+ stay gated on P00.
   `~/proficio` (= Android repo @ ce05f24). None is the frozen 1.6.0 tree.
 - P00 remains BLOCKED. Not searched: other devices, cloud drives, git history/branches,
   `.git` object stores, large archives.
+
+## Update 2026-10-19 (Drive search, owner-authorized)
+Scope: Google Drive title/fullText/parentId searches. Results:
+- Full-text search for the manifest hash prefix `800b9e683acff`: 0 results.
+- Title search "proficio" (2 pages read of many; page 3+ not read): skill-spec lineage only —
+  `proficio-skill-1.1.0`, `proficio-1.1.0-pass2` (+ two .zip copies, 43169 B),
+  `Proficio_v1.1.2_review_bundle.zip` (59274 B, sha256 `9f3f3bac…cee5`), `proficio-chatgpt-knowledge.zip`,
+  `proficio-engine-chatgpt.md`, `proficio_bridge.py`, `install-proficio-skill.sh`, `proficio-source-08.md`,
+  and ~100 auto-named `proficio-NN` folders (2026-09-14 uploads; contents not opened).
+- Opened `Proficio_v1.1.2_review_bundle.zip`: 18 files (SKILL.md, references/*, acceptance_tests.py,
+  verify_package.py, MANIFEST.json, CHANGES*.md). Zero occurrences of "1.6.0" or the hash. It is a
+  prompt-layer skill spec (v1.1.2), not the enforcement engine. Peer-council review in Drive
+  (`proficio-peer-council-review.docx`) itself says a runtime must be split out of the spec.
+- Not opened: the 1.1.0-pass2 zips, chatgpt-knowledge zip, `proficio-source-*.md` series (01–14 exist
+  on Penguin), the ~100 proficio-NN folders, Drive pages after the 2nd.
+P00 remains BLOCKED. Drive evidence suggests 1.6.0 may be a Hermes-side runtime that was never
+uploaded to Drive (INFERENCE only).
