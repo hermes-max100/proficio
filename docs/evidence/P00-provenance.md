@@ -198,3 +198,22 @@ Ed25519-signed, verify-only` on every branch: 0. No path named proficio/approval
 branch (only src/system/*envelope*.py, tests/test_provenance_envelope.py — Hermes provenance, unrelated).
 Branch HISTORY (beyond tips) for the 54 non-main Hermes-Ultra branches: not inspected.
 Conclusion: neither repo ever contained the 1.6.0 tree. P00 still BLOCKED, 5/59 files.
+
+## 2026-10-20 — Builder workspace search: Penguin `~/codex-cron` (982 MB work dir, 335 run dirs) + `~/workspace` + `~/tandem-share`
+Scans (read-only): file names (approverd*, consumption/idempotency/trust/inventory/store/ledger.py, test_*approv*,
+*1.6.0*, proficio-skill*) and text (`proficio-skill-1.6.0`, `proficio-approverd`, `800b9e683acf`).
+- No file named like the missing 1.6.0 modules exists under codex-cron except Hermes-upstream tests/stores in
+  `work/upstreamdiff-20261004-223930/{frozen,upstream}` (that "frozen" tree is the Hermes app, not Proficio).
+- No path of the form `proficio-skill-1.6.0/<file>` appears in any codex-cron log (so the logs do not enumerate
+  the 59 files). Text matches are only: build note `sweep-20261003-1700/1800/1900` (builder-reported completion),
+  and later runs recording the manifest hash with "NOT LOCATED".
+- `~/workspace/` now contains no `proficio-peer-tests` (top-level entries: agentic-mesh, arena-lanes, council,
+  evaluations, goals, hermes-bridge, listing-genie, skills, ...). `workspace/skills/proficio` = 0.1.0 bootstrap.
+- Timeline from tandem-share: `proficio-frozen-identity-search-20261006-0052.txt` (2026-10-06, STATUS UNVERIFIED):
+  searched redteam, Rendezvous, tandem-share for `800b9e` → ZERO matches; `proficio-input-inventory-20261005-155138.txt`
+  lists the red-team input as `~/redteam/code/runtime` (11 files, HMAC generation). So by 2026-10-05/06 the frozen
+  tree was already not available to the council/red-team; only 5 of its files had been handed to the adjudicators.
+INFERENCE (unproven): the 2026-10-03 "build completed" may have occurred in a sandbox/host whose output was never
+persisted to Penguin (builder-reported only: 25/25 and 163 passed are unverified claims), or the tree was deleted
+between 10-03 and 10-05. Either way no 1.6.0 tree exists in any location I can read.
+P00 remains BLOCKED (5/59 files).
