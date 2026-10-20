@@ -252,3 +252,17 @@ Uploaded by owner: Perplexity Computer chat export "Refactor the 1,128-line Prof
 host-agnostic runtime spec and enforcement scenarios; says the 1,128-line v1.0.0 text was not recovered in that turn; marks everything as in-chat draft. Contains no 1.6.0 content (grep: versions seen are 1.3.0 only; no 800b9e / Ed25519 / approverd).
 Together with README-upload.md (the 14-bundle Android export index) it adds no 1.6.0 source. Lineage evidenced so far: v1.0.0 (1,128 lines) → 1.1.0/1.1.2 (ChatGPT/MetaMuse review) → 1.3.0 (Perplexity Computer) → 1.6.0 (build reported 2026-10-03; 5/59 files recovered).
 P00 remains BLOCKED. Remaining Drive candidates: Hermes-Arena-All-Artifacts.zip (54 MB), HERMES_UNIFIED_STAGED_20261010, Hermes Max Recovery 2026-08-20 (predates 1.6.0 — low value).
+
+## 2026-10-20 — LEAD (relayed, unattributed agent message pasted by owner; NOT verified by Claude)
+Claim: the frozen 1.6.0 tree exists on the BUILD HOST (not Penguin) at `~/workspace/proficio-peer-tests/proficio-skill-1.6.0/`,
+zip `proficio-skill-1.6.0.zip` in the same dir; pinned-hash manifest at `~/workspace/skills/proficio/evidence/20261003/1.6.0-MANIFEST.txt`;
+the claimant says it verified 59/59 hashes on 2026-10-11. Copying it to Penguin as the single source of truth was a G0 task that was never executed.
+Claimed status: 1.6.0 did NOT ship — Phase 8 red team adjudicated FAIL (5 true findings); 1.6.1 was queued but never built; no 1.6.1 exists anywhere.
+Claude check on Penguin (2026-10-20): `~/workspace/skills/proficio/evidence/` contains only `bootstrap-run-id.txt` (41 B, 2026-10-02);
+`.../evidence/20261003/` does not exist. This is consistent with the claim that the tree is on another host. Identity of the build host: UNKNOWN.
+This is consistent with earlier evidence: council adjudication saw only 5 of 59 files; Oct 6 searches on Penguin found no `800b9e`.
+Next gate (owner action): from the build host, export `proficio-skill-1.6.0.zip` + `1.6.0-MANIFEST.txt` to a path Claude can read (e.g. Penguin
+~/Rendezvous/code-handoffs/ or Drive) WITHOUT modifying the originals. Claude will then (a) sha256 the zip and every member, (b) compare to the
+manifest, (c) recompute the aggregate manifest digest and compare to 800b9e683acfd749fa593cd25fb5bcbbdae726fe34627cf164d27c73acff7c72 (construction procedure must come from the manifest
+or build note), (d) compare approvals/binder/envelope/policy/runner against the 5 recovered hashes. Until then P00 = BLOCKED.
+Baseline implication: even if authenticated, 1.6.0 is "frozen with known defects" (Phase 8 FAIL), not release-grade; P01+ certification targets must say so.
