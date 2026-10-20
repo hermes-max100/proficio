@@ -281,3 +281,18 @@ Claude assessment:
 Minimum evidence requested (small, non-sensitive): sha256 of `1.6.0-MANIFEST.txt` and of `proficio-skill-1.6.0.zip`; the manifest contents (path + sha256 per file, 59 lines)
 and the aggregate-digest construction rule; `sha256sum` of approvals.py/binder.py/envelope.py/policy.py/runner.py from the tree. Compare with recovered hashes:
 approvals 8d72125b…5693, binder cd0a6324…51a4, envelope ebce7d2f…3018e, policy ade4aab1…a724, runner 94faae39…012b.
+
+## 2026-10-20 — Build-host agent's pasted verification outputs, checked by Claude (result: PARTIAL; P00 NOT marked met)
+Pasted claims: sha256(1.6.0-MANIFEST.txt) = 800b9e683acfd749fa593cd25fb5bcbbdae726fe34627cf164d27c73acff7c72 (exact target);
+sha256(proficio-skill-1.6.0.zip) = a892e06d6608a4a7879aa69b445c0b77d11e72aca3948f71ae5da6ac6b03e42e; tree↔manifest 59/59; five files match Penguin-recovered hashes.
+What Claude could check from the paste:
+- Five runtime files: full sha256 strings in the paste are identical to the Penguin copies (approvals 8d72125b…5693, binder cd0a6324…51a4, envelope ebce7d2f…3018e,
+  policy ade4aab1…a724, runner 94faae39…012b). Consistent; not independent proof, because those digests were already recorded in Penguin-side adjudication docs.
+- Pasted manifest text contains 45 lines (claimed 59); path list is sorted and ends at `./tests/test_council2.py` — 14 trailing entries are missing (alphabetically after it).
+  One line (`./tests/integration/test_acceptance.py`) has a 63-hex-character hash (malformed). The last line was re-typed by the sender with a stated transcription error.
+  → Claude cannot recompute sha256(manifest) from the paste; sha256 of the 45-line paste = 1aae4c7b5f485f4f1c8dad956905026fc214bb0d19406c1681336617c88fd815 (expected not to match; incomplete).
+- Zip sha256 and "matches the Oct 3 build record": not checkable by Claude.
+Observed composition of the frozen tree (from the 45 visible entries): adapters/ (5), approverd/ (5), runtime/ (20 incl. ed25519, issuer_client, trust, consumption, idempotency, ledger, store, validation),
+tests/ (adversarial, fixtures, integration, superseded, test_150/151/160 …). Missing-module list from earlier notes (store, inventory, idempotency, consumption, ledger, trust, proficio-approverd) is consistent with this.
+Gate status: P00 = CLAIMED MET BY HOST; Claude verification INCOMPLETE. To close: a transcription-proof copy of the manifest (e.g. `base64 -w0 1.6.0-MANIFEST.txt`) so Claude can
+decode it and compute sha256 == 800b9e68…7c72 itself; then (optional) zip/tree copy to Penguin for ChatGPT's independent 59/59 re-hash.
