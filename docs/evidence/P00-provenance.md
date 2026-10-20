@@ -78,3 +78,24 @@ task-result JSON, no source trees; known local archives — no match.
 My additional check: Drive `proficio-chatgpt-knowledge.zip` (16497 B) member list = prompt-forge.md,
 forge.py, plugin-forge.md, INSTRUCTIONS.md, skill-forge.md, goal-presets.md — the forge skill, not an
 enforcement runtime (content not decoded; listing only).
+
+## Update 2026-10-20 (Penguin whole-disk read-only scan, owner-authorized)
+Scan script `/tmp/p00s/scan.sh` on Penguin (find/sha256sum/grep; read-only; output `/tmp/p00s/out.txt`).
+- Step 1 — any file named *manifest*/SHA256SUMS*/*release* (<5 MB), whole filesystem (-xdev, excluding
+  node_modules/.cache/ai_agent_env): 0 files with sha256 starting `800b9e68`. COMPLETE.
+- Step 2 — archives named proficio|hermes|backup|1.6|enforce: 24 found, none named for 1.6.0.
+  Large candidates (NOT opened): hermes-max-cloud-*.tar.gz (~45 MB, 2026-08-20..09-02, many copies),
+  hermes-ultra-production-*.zip, opt-hermes-voice-retired.tgz, omniroute-backup-2026-10-13.tar.gz.
+  Opened by listing: proficio_gate_R1R5_evidence_20261014.tgz, proficio_R6_R3_evidence_20261014.tgz,
+  Hermes_Proficio_Enterprise_Evidence_20261015.tgz, Hermes_Recovery_R2_R3_R4_Evidence_20261015.tgz —
+  they contain the Hermes registry gate-test code (registry.py, secure_registry.py, runner.py,
+  worker.py, ...) plus receipts/sqlite; grep of those .py files and baseline/results JSON for
+  `1.6.0`/`800b9e68`/`canonical`: 0 hits. This is registry test tooling, not the Proficio 1.6.0 engine.
+- Step 3 — dirs named proficio*/enforce*/canonical*: ~/proficio, ~/proficio_markdown,
+  ~/agent-skills/skills/proficio-engine, ~/rendezvous/bounded-outputs/proficio-1..54 (council outputs),
+  ~/.claude/projects/...-agent-workstreams-20261012-proficio (memory dir only, empty).
+- `~/rendezvous/agent-workstreams-20261012/proficio/` (WORK_ITEM.md, RELEASE_GATE.md, skill/): confirms
+  the same 0.1.0 PARTIAL bootstrap (skill/manifest.json sha256 `1910b4d8…b692`); its own WORK_ITEM says
+  "frozen v1.6.0 hash 800b9e...7c72 is NOT located". No 1.6.0 hits in that tree.
+- Step 4 — text grep (proficio near 1.6.0) over ~: still running at time of writing; result NOT YET READ.
+P00 remains BLOCKED. No verifiable 1.6.0 source found. Superseding baseline NOT approved.
