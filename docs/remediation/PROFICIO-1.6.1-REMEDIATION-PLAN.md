@@ -52,3 +52,11 @@ No remediation work started before step (1)–(2) pass.
 Step 1 DONE (Claude): manifest sha256 == 800b9e68…7c72; 59/59 pinned files match; five recovered files match. Step 3 DONE: full read-only backup `~/Rendezvous/code-handoffs/frozen-1.6.0-full-backup-20261020/`.
 Step 2 (ChatGPT independent re-run) pending/optional. Step 4 (create separate `1.6.1-candidate` tree and start R1–R11) is next; the frozen tree stays inside the read-only backup zip and is never edited.
 Unpinned in the zip: 31 .md docs + 4 .pytest_cache files (not covered by the manifest).
+
+## Progress log — R1/R2 (2026-10-20)
+Workspace (Penguin): `~/workspace/proficio-1.6.1-candidate/` — `base/` (pristine extract of the frozen zip, for baseline), `probe160/` (frozen + new tests, for failing-first proof), `cand/` (the 1.6.1 working tree). The read-only backup is never edited.
+Environment: Python 3.13.5, pytest 9.1.1, hypothesis 6.130.5. `tests/superseded/` is documented as NOT part of the suite (1.5.x HMAC model) and is excluded from runs.
+Failing-first proof (frozen 1.6.0 + `tests/test_161_r1_r2.py`, 9 tests): **6 FAILED, 3 passed** (the 3 passes are controls: matching binding executes; RESTRICTED needs local_only; RESTRICTED+local_only executes).
+  failing on frozen = the adjudicated bugs: action mismatch, schema mismatch, arguments mismatch, arguments omitted, RESTRICTED-packet→PUBLIC-step, step class < bind class.
+Design chosen: new gate conditions `ActionBound` (signed action == bind.operation), `SchemaBound` (signed schema_version == bind.schema_hash), `ArgumentsBound` (hash of the arguments passed to `execute_step(..., arguments=)` == signed arguments_hash; omitted ⇒ fail closed unless `RunContext(allow_unbound_arguments=True)`);
+`DataRouteAllowed` now requires step class == bind class, signed envelope class ≥ bind class, strictest governs local-only. NOT done in R1/R2: PolicyVersion/Environment binding, transaction_hash reconstruction, destination/route allow-listing (R2b), adapter-level dispatch (the runner still invokes an opaque callback; the arguments hash binds what the CALLER declares, not what the callback does — a full fix needs runner-owned dispatch).
