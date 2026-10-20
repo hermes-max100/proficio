@@ -152,3 +152,19 @@ P00 status: STILL BLOCKED (partial source recovered: 5/59; manifest unreproducib
 Next: locate the other 54 files (reviewer lanes' own workdirs under `~/proficio-phase8/council-fanout/lane-responses`,
 other devices, Drive "Hermes unified blueprints", offline penguin devices) or approve a reconstruction plan.
 RULE: do not push these engine files to the public Android repo (per the 2026-10-15 ledger).
+
+## 2026-10-20 — lane-responses / Drive blueprints / Gmail (relayed from ChatGPT; spot-verified by Claude)
+Relayed (ChatGPT): `lane-responses` = 15 JSON security reviews of the five modules (no additional original
+source); 3 Drive "Hermes unified blueprints" documents have identical text and describe 1.6.0 as
+unverified / not production-ready, OBSERVE mode, no enforcement authorization.
+Claude re-verified on Penguin (read-only):
+- `~/rendezvous/code-handoffs/P00-LANE-DRIVE-REVIEW-20261020.md` exists (4371 B), sha256 = 2af3cd7e8a962da047317d44cc1aef18fa776551246d4576c9e711cab0b01520 (matches the claimed value).
+- The five module sha256 values in `~/codex-council-20261005/task2/` and `~/proficio-phase8/council-fanout/`
+  are identical to each other and to the table in FINDINGS-ADJUDICATION.md (prefixes 8d72125b/cd0a6324/ebce7d2f/ade4aab1/94faae39).
+- `council-fanout.tgz` members: fanout.py, PHASE8-PROMPT-FINAL.txt + the same 5 modules only.
+- `closure-20261012/recovery/perplexity-one-shot/inputs/` = Hermes host snapshot (Arena `proficio.py`, mission
+  control), not the engine.
+Claude additional: Drive title search (proficio-skill / peer-tests / frozen) → only the 1.1.0 skill folders and
+unrelated pandas/frozenlist files; Gmail search ("proficio 1.6.0", with and without attachments) → 0 threads.
+Drive file revisions/old versions: NOT SEARCHED (the Drive connector here exposes no revision listing).
+P00: BLOCKED, 5/59 files accounted for; 54 files + canonical manifest still missing.
