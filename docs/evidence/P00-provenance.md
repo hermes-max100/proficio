@@ -54,3 +54,16 @@ Scope: Google Drive title/fullText/parentId searches. Results:
   on Penguin), the ~100 proficio-NN folders, Drive pages after the 2nd.
 P00 remains BLOCKED. Drive evidence suggests 1.6.0 may be a Hermes-side runtime that was never
 uploaded to Drive (INFERENCE only).
+
+## Update 2026-10-20 (Penguin `~/proficio_markdown` read)
+Read all 14 bundles (`proficio-source-01..14.md`, 26,147 lines, 1,169,728 B, dated 2026-09-09) plus
+`README-upload.md`. Method: grep for `1.6.0` / `800b9e68`; parse every `## \`path\`` section; hash each
+reconstructed file; compare with `~/proficio` @ ce05f24 (`git ls-files`, 103 non-.gradle files).
+- Hits for `1.6.0` or the manifest hash: 0.
+- Bundles contain 103 paths = exactly the 103 tracked files; 0 missing, 0 extra.
+- Content: 97 files byte-identical to the repo under the export's newline convention; 6 differ only
+  by fenced-code/trailing-whitespace parsing (README.md and AutoForgeEngine.kt re-verified exact with a
+  fence-tolerant parse; the other 4 equal modulo trailing whitespace). No real content differences found.
+- Only version strings seen: `versionName = "1.0"` (app) and `"version": "1.0.0"` (MCP template).
+Conclusion: the bundles are an upload-ready text export of the Android repo (README-upload.md says so),
+not the 1.6.0 enforcement engine. P00 remains BLOCKED.
