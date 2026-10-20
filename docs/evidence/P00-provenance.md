@@ -177,3 +177,9 @@ Search (git grep + file-name scan) for `800b9e68`, `1.6.0`, `proficio`, approval
 kernel's own module (unrelated to Proficio's `envelope.py`). Tags: none. Not the source of 1.6.0.
 Remaining unsearched private repos: perplexity-connector-bridge, hse-v5.3.1-hardened, hse-enterprise (and the
 `has_more` page of list_repos).
+
+## 2026-10-20 — GitHub `hermes-max100/perplexity-connector-bridge` searched (private; read-only)
+Single branch `main` @ 475b3b7, no tags; 7 files (README.md, SKILL.md, bridge.py, host_adapter.py,
+docs/HOST_ADAPTER.md, tests/test_bridge.py, tests/test_host_adapter.py). Grep for `800b9e68`, `1.6.0`,
+`proficio` and file-name scan for approvals/binder/envelope/policy/runner/manifest: 0 hits.
+History NOT inspected (depth-1 clone). Not the source of 1.6.0.
