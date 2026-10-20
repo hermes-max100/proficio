@@ -296,3 +296,14 @@ Observed composition of the frozen tree (from the 45 visible entries): adapters/
 tests/ (adversarial, fixtures, integration, superseded, test_150/151/160 …). Missing-module list from earlier notes (store, inventory, idempotency, consumption, ledger, trust, proficio-approverd) is consistent with this.
 Gate status: P00 = CLAIMED MET BY HOST; Claude verification INCOMPLETE. To close: a transcription-proof copy of the manifest (e.g. `base64 -w0 1.6.0-MANIFEST.txt`) so Claude can
 decode it and compute sha256 == 800b9e68…7c72 itself; then (optional) zip/tree copy to Penguin for ChatGPT's independent 59/59 re-hash.
+
+## 2026-10-20 07:1x — STEP 1 EXECUTED BY CLAUDE ON PENGUIN: `verify_160.py` against the copied hand-off (RESULT: manifest authenticated; 7/8 checks PASS)
+Inputs (in `~/Rendezvous/code-handoffs/inbox-160/`): `1.6.0-MANIFEST.txt` (5575 B), `proficio-skill-1.6.0.zip` (211,302 B). sha256 computed on Penguin by Claude:
+- manifest = `800b9e683acfd749fa593cd25fb5bcbbdae726fe34627cf164d27c73acff7c72` → EQUALS the frozen-1.6.0 target (first independent reproduction; ties the pinned manifest to the protocol hash).
+- zip = `a892e06d6608a4a7879aa69b445c0b77d11e72aca3948f71ae5da6ac6b03e42e` (matches the host's claim).
+Checks: manifest_sha256==target PASS; manifest 59 well-formed lines PASS; every manifest file present in zip with matching sha256 (59/59, 0 mismatches) PASS; the five recovered runtime files match PASS;
+`zip_member_set==manifest_set` FAIL — zip has 94 members = the 59 pinned .py files + 31 .md docs + 4 `.pytest_cache` files that the manifest does NOT list. This is a scope observation (my check was stricter than the manifest), not an integrity failure.
+No member path is absolute or contains `..`. Extracted nowhere (in-memory only).
+Scope of what 800b9e68… authenticates: the 59 Python files (runtime/ 20, approverd/ 5, adapters/ 5, tests/ the rest). The 31 markdown docs (DESIGN, DECISION, TRUST_BOUNDARY, COUNCIL_*, PRODUCTION-READINESS-20261003, RELEASE_NOTES, …) and cache files are UNPINNED by this manifest.
+Backup: `~/Rendezvous/code-handoffs/frozen-1.6.0-full-backup-20261020/` (zip, manifest, verifier, result file, SHA256SUMS; chmod 444/555; `sha256sum -c` OK; byte-identical to inbox).
+P00 gate ("canonical 1.6.0 provenance manifest matched"): MET on Penguin by Claude's own computation. Remaining: ChatGPT's independent re-run (step 2) is requested but not required for the manifest-hash fact above. Caveat carried forward: Phase 8 FAIL; production readiness NOT APPROVED.

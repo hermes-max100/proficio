@@ -47,3 +47,8 @@ Steps once both files are in the inbox: (1) `python3 -I verify_160.py 1.6.0-MANI
 (2) ChatGPT independently re-runs the same check and reports its own output; (3) make a read-only backup copy next to the partial backup; (4) only then create the separate 1.6.1-candidate working tree and start R1–R11.
 Verifier assumption: zip member paths are either `./path`, `path`, or prefixed `proficio-skill-1.6.0/`; adjust prefix handling if the archive layout differs (report, don't guess).
 No remediation work started before step (1)–(2) pass.
+
+## Step status 2026-10-20
+Step 1 DONE (Claude): manifest sha256 == 800b9e68…7c72; 59/59 pinned files match; five recovered files match. Step 3 DONE: full read-only backup `~/Rendezvous/code-handoffs/frozen-1.6.0-full-backup-20261020/`.
+Step 2 (ChatGPT independent re-run) pending/optional. Step 4 (create separate `1.6.1-candidate` tree and start R1–R11) is next; the frozen tree stays inside the read-only backup zip and is never edited.
+Unpinned in the zip: 31 .md docs + 4 .pytest_cache files (not covered by the manifest).
