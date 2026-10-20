@@ -99,3 +99,24 @@ Scan script `/tmp/p00s/scan.sh` on Penguin (find/sha256sum/grep; read-only; outp
   "frozen v1.6.0 hash 800b9e...7c72 is NOT located". No 1.6.0 hits in that tree.
 - Step 4 — text grep (proficio near 1.6.0) over ~: still running at time of writing; result NOT YET READ.
 P00 remains BLOCKED. No verifiable 1.6.0 source found. Superseding baseline NOT approved.
+
+## NEW LEAD 2026-10-20 — where 1.6.0 was built (Penguin text hits; source tree itself still not found)
+Sources (read-only snippets on Penguin):
+- `~/codex-cron/work/sweep-20261003-1800/memory-2026-10-03-tail.md`: "Proficio 1.6.0 F1/F2 build completed"
+  (17:12 PDT 2026-10-03; builder-reported, external adjudication pending). New tree reported at
+  `~/workspace/proficio-peer-tests/proficio-skill-1.6.0/`; build record
+  `~/workspace/proficio-peer-tests/proficio-1.6.0-BUILD-20261003.md`; package
+  `~/workspace/proficio-peer-tests/proficio-skill-1.6.0.zip`. Builder-reported: 25/25 new acceptance tests,
+  163 passed / 0 failed full suite, Ed25519 issuance, `proficio-approverd`, 17-field typed envelope.
+  (These are the builder's claims, not verified by me.)
+- `~/codex-council-20261005/task2/prompt.txt`: "frozen 1.6.0 sources (approvals.py, policy.py, runner.py,
+  binder.py, envelope.py) ... SHA-256 manifest: 800b9e683acfd749fa593cd25fb5bcbbdae726fe34627cf164d27c73acff7c72
+  for the 59-file frozen tree at ~/workspace/proficio-peer-tests/proficio-skill-1.6.0/".
+  This gives the FULL manifest hash (recorded text, not rehashed) and the file count (59).
+Existence check 2026-10-20: `~/workspace/proficio-peer-tests/` does NOT exist on Penguin (ls: No such file).
+The zip and BUILD note are also absent at those paths. Whole-home name search for `*proficio-skill-1.6*`,
+`*proficio-1.6*`, `*proficio-peer-tests*` was started (result pending at time of writing).
+Interpretation (INFERENCE): 1.6.0 existed as a 59-file tree built 2026-10-03; it was removed/moved after
+2026-10-05. Candidate recovery paths: trash/other disk, other devices (penguin duplicates offline), the
+council/peer reviewers' copies, cloud storage, shell history, ~/workspace backups.
+P00 still BLOCKED.
