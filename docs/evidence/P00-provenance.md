@@ -236,3 +236,19 @@ MEvalKit-upstream) and two private legal-case repos (legal-skills, e088165-court
 History behind branch tips: not inspected. Conclusion: with proficio, agent-skills, Hermes-Ultra, Hermes-Master-JARVIS
 and perplexity-connector-bridge already searched, no GitHub repo in the account holds the 1.6.0 tree.
 P00 BLOCKED (5/59).
+
+## 2026-10-20 — Google Drive "Hermes"-named folders searched (owner request)
+Folder-title search `Hermes` (folders only, 2 pages) found ~25 folders. Listed children of the ones most likely to hold Proficio build material:
+- `Hermes' Build Handoff` (2026-09-11): Interbridge-*.js scripts, tutorial notes — no Proficio source.
+- `Mission Control hermes` (2026-09-27): R&D-lab/Mission-Control design md/html, CFK site html, a global evidence-integrity deployment pack — no Proficio source.
+- `Hermes Audit Packages` (2026-09-24): hermes-agent-v2 / v2.1 zips (~50–59 KB), prompt docs, "Battle Bots" subfolder — not Proficio.
+- `HERMES_PERPLEXITY_COMPUTER_INPUTS_20261010`: HERMES_UNIFIED_BLUEPRINT_20261007.md (176 KB; says "Proficio 1.6.0 in OBSERVE mode only … NOT production ready … 1.6.1 remediation queued"; host penguin not accessible to its author, all host claims UNVERIFIED),
+  HERMES_CURRENT_HOST_SOURCES_20261010.zip (65,572 B — same size as the Penguin copy), `Hermes-Arena-All-Artifacts.zip` (54 MB, 2026-10-15; NOT downloaded/opened),
+  a Perplexity model-council export (case-specific, not opened further), subfolder HERMES_UNIFIED_STAGED_20261010 (not listed).
+- `Hermes Evidence Archive` (2026-10-05) has 4 subfolders (Test Receipts, Council & Model Reviews, Enterprise Evidence, Session Exports); the three I listed returned no children.
+- `Hermes' Soul.md` folder: personal profile/instruction archives; irrelevant to P00, not used.
+- Not listed: Hermes build docs, Hermes ideas, Hermes Max build, Hermes Max Recovery 2026-08-20, Hermes Agent Builder, Hermes Eval System, Hermes-Ruflo Stack, hermes_ultra, hermes-max-live, _02_HERMES_BUILDS, hermes-skillops-router(-v1.2.0), Claude Hermes setup, hermes-companion-linux.
+Uploaded by owner: Perplexity Computer chat export "Refactor the 1,128-line Proficio SKILL.md into a <500-line core…" (95,651 B, 1,952 lines; Perplexity-produced). It proposes a thin kernel + a v1.3.0 split map, audit scorecard,
+host-agnostic runtime spec and enforcement scenarios; says the 1,128-line v1.0.0 text was not recovered in that turn; marks everything as in-chat draft. Contains no 1.6.0 content (grep: versions seen are 1.3.0 only; no 800b9e / Ed25519 / approverd).
+Together with README-upload.md (the 14-bundle Android export index) it adds no 1.6.0 source. Lineage evidenced so far: v1.0.0 (1,128 lines) → 1.1.0/1.1.2 (ChatGPT/MetaMuse review) → 1.3.0 (Perplexity Computer) → 1.6.0 (build reported 2026-10-03; 5/59 files recovered).
+P00 remains BLOCKED. Remaining Drive candidates: Hermes-Arena-All-Artifacts.zip (54 MB), HERMES_UNIFIED_STAGED_20261010, Hermes Max Recovery 2026-08-20 (predates 1.6.0 — low value).
