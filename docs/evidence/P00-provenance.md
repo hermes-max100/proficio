@@ -183,3 +183,18 @@ Single branch `main` @ 475b3b7, no tags; 7 files (README.md, SKILL.md, bridge.py
 docs/HOST_ADAPTER.md, tests/test_bridge.py, tests/test_host_adapter.py). Grep for `800b9e68`, `1.6.0`,
 `proficio` and file-name scan for approvals/binder/envelope/policy/runner/manifest: 0 hits.
 History NOT inspected (depth-1 clone). Not the source of 1.6.0.
+
+## 2026-10-20 — Git history searched: hermes-max100/agent-skills and hermes-max100/Hermes-Ultra
+agent-skills: 3 branches (main@47194fb 11 commits; ai/proficio-adaptive-policy@77a61ef 4 commits, 2026-09-06..09;
+ai/cct-selective-adoption-20261010@3eadc5e) = 25 commits total, all fetched. `git log -S` for `800b9e68` hits only
+the 2026-10-15 recovery-ledger commits (bcda128, 47194fb) = text references. `-S1.6.0` additionally hits
+ai/cct commits 3eadc5e/f8d8ded: `verification/cct-20261010/INTEGRATION_EVIDENCE.md` says no live Proficio 1.6.0
+envelope/ledger gate was exercised (UNVERIFIED). No file ever named approvals/binder/envelope/policy/runner/
+peer-tests/proficio-skill in any commit; no deleted proficio source. `PINNED_MANIFEST.json` there pins a
+claude-code-templates review candidate (SKILL.md etc.), unrelated to the 1.6.0 manifest.
+Hermes-Ultra: main 225 commits fetched (depth 1000) + tag hermes-ultra-release-v1; all 55 branch tips fetched
+(depth 1). Pickaxe `800b9e68`/`proficio` on main: 0. Tree grep for `800b9e68|proficio-skill-1.6|proficio-peer-tests|
+Ed25519-signed, verify-only` on every branch: 0. No path named proficio/approvals.py/binder.py/peer-tests on any
+branch (only src/system/*envelope*.py, tests/test_provenance_envelope.py — Hermes provenance, unrelated).
+Branch HISTORY (beyond tips) for the 54 non-main Hermes-Ultra branches: not inspected.
+Conclusion: neither repo ever contained the 1.6.0 tree. P00 still BLOCKED, 5/59 files.
