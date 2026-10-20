@@ -67,3 +67,14 @@ reconstructed file; compare with `~/proficio` @ ce05f24 (`git ls-files`, 103 non
 - Only version strings seen: `versionName = "1.0"` (app) and `"version": "1.0.0"` (MCP template).
 Conclusion: the bundles are an upload-ready text export of the Android repo (README-upload.md says so),
 not the 1.6.0 enforcement engine. P00 remains BLOCKED.
+
+## Owner decision 2026-10-20 (relayed in chat): Option 1 — continue source recovery
+Do NOT supersede the 1.6.0 requirement yet. If all read-only searches fail to produce a verifiable
+match, a superseding baseline is a separate, documented engineering decision requiring owner approval.
+Findings relayed with that decision (from ChatGPT's independent Penguin checks; NOT reproduced by me):
+local Git object stores — no 1.6.0 source, two unreachable Hermes blobs inspected; Drive
+proficio-1.1.0-pass2 — skill package, not enforcement runtime; sampled proficio-NN folders — small
+task-result JSON, no source trees; known local archives — no match.
+My additional check: Drive `proficio-chatgpt-knowledge.zip` (16497 B) member list = prompt-forge.md,
+forge.py, plugin-forge.md, INSTRUCTIONS.md, skill-forge.md, goal-presets.md — the forge skill, not an
+enforcement runtime (content not decoded; listing only).
