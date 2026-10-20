@@ -120,3 +120,35 @@ Interpretation (INFERENCE): 1.6.0 existed as a 59-file tree built 2026-10-03; it
 2026-10-05. Candidate recovery paths: trash/other disk, other devices (penguin duplicates offline), the
 council/peer reviewers' copies, cloud storage, shell history, ~/workspace backups.
 P00 still BLOCKED.
+
+## RECOVERY PROGRESS 2026-10-20 — 5 of 59 frozen 1.6.0 files located (source NOT copied into this repo)
+Search of shell history + council reviewer folders + home-wide source-name search (read-only, Penguin).
+- `~/.bash_history` (109 KB): 0 lines referencing proficio-peer-tests / proficio-skill-1.6 / proficio-1.6.
+  (Agent-run commands from codex-cron are not necessarily in it, so this does not show how the tree vanished.)
+- FOUND, 1.6.0-marked source (docstrings: "Ed25519-signed, verify-only runtime (F1, 1.6.0)", "In-process
+  issuance was removed in 1.6.0 (F1)", "LEGACY PACKET: not valid under 1.6.0", "Typed canonical approval envelope (F1/F2, 1.6.0)"):
+  | file | bytes | sha256 |
+  | approvals.py | 12739 | 8d72125b2970984dbcf0c8937e238f61e8903716282cfced1e4eb38c95e65693 |
+  | binder.py    | 13127 | cd0a632403980d8ab857351ba25d276619d89d85d1559bcfb10a5f1191e851a4 |
+  | envelope.py  |  9738 | ebce7d2fe1b4da8ea6a3ccb6bd72900a5d04fa20479ae4caa1d57ebacca3018e |
+  | policy.py    |  7536 | ade4aab11cc1727f11931e13c353445e0ffbbf52bce8be68ee49e21d1d9aa724 |
+  | runner.py    | 29377 | 94faae3992b0bbb0643fc229c5ce8914a6c299eae6f7cb27d6765a98d69a012b |
+  Copies with identical hashes at `~/codex-council-20261005/task2/`, `~/proficio-phase8/council-fanout/`
+  (+ `council-fanout.tgz`), and (approvals/binder/envelope/policy confirmed by listing) `~/codex-cron/work/adjud-20261005-162112/`.
+  These five hashes MATCH the digests recorded in `~/codex-council-20261005/task2/FINDINGS-ADJUDICATION.md`
+  (written by an adjudicator at the time). That document also states the aggregate 59-file manifest digest is
+  UNVERIFIED because the other 54 files and the manifest-construction procedure were not supplied.
+- NOT reproducible from these: the manifest hash `800b9e68…7c72` (needs all 59 files + the exact construction
+  procedure). Missing: 54 files incl. sister modules (store, inventory, idempotency, consumption, ledger, trust),
+  `proficio-approverd`, tests, and the manifest file itself.
+- Pre-1.6 ancestor (NOT 1.6.0): `~/redteam/code/runtime/` — 11 py files (approvals/binder/idempotency/inventory/
+  ledger/policy/readiness/runner/store/validation/__init__), HMAC issuance, no "1.6.0"/Ed25519. Useful as the
+  prior-version tree; cannot stand in for the frozen tree.
+- 16 unique large/small Hermes archives (hermes-max-cloud-*, hermes-ultra-production-*, hermes-ultra-v1.0,
+  HERMES-AUTONOMY, opt-hermes-voice-retired, omniroute-backup, HERMES_CURRENT_HOST_SOURCES) were extracted
+  to /tmp, searched, and deleted: 0 manifest hashes matching, 0 text hits for 1.6.0/800b9e68 near proficio.
+  One path hit only: `host_snapshot/arena-mission-control/proficio.py` (Arena module, not engine).
+P00 status: STILL BLOCKED (partial source recovered: 5/59; manifest unreproducible).
+Next: locate the other 54 files (reviewer lanes' own workdirs under `~/proficio-phase8/council-fanout/lane-responses`,
+other devices, Drive "Hermes unified blueprints", offline penguin devices) or approve a reconstruction plan.
+RULE: do not push these engine files to the public Android repo (per the 2026-10-15 ledger).
