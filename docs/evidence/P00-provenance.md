@@ -168,3 +168,12 @@ Claude additional: Drive title search (proficio-skill / peer-tests / frozen) →
 unrelated pandas/frozenlist files; Gmail search ("proficio 1.6.0", with and without attachments) → 0 threads.
 Drive file revisions/old versions: NOT SEARCHED (the Drive connector here exposes no revision listing).
 P00: BLOCKED, 5/59 files accounted for; 54 files + canonical manifest still missing.
+
+## 2026-10-20 — GitHub `hermes-max100/Hermes-Master-JARVIS` searched (private; attached read-only)
+Branches: `main` @ 9aefa51 (1 file: .gitignore — "Initial commit") and `discovery-engine-kernel-ci-20261012`
+@ a0f906a (62 files: discovery-engine kernel — common/, services/, receipts/, proof/, schemas/, tests/).
+Search (git grep + file-name scan) for `800b9e68`, `1.6.0`, `proficio`, approvals/binder/policy/runner/manifest:
+0 Proficio hits. Only "1.6.0" is `pluggy-1.6.0` in uv.lock. `common/envelope.py` there is the discovery
+kernel's own module (unrelated to Proficio's `envelope.py`). Tags: none. Not the source of 1.6.0.
+Remaining unsearched private repos: perplexity-connector-bridge, hse-v5.3.1-hardened, hse-enterprise (and the
+`has_more` page of list_repos).
