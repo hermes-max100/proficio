@@ -39,3 +39,11 @@ Verdict then: **Phase 8 clean-tree = FAIL** (5 TP, 0 FP, 1 partially verified, p
 ## Backup performed (Penguin, read-only copies; originals untouched)
 `~/Rendezvous/code-handoffs/frozen-1.6.0-partial-backup-20261020/` — 5 runtime files + the two Phase 8 docs, chmod 444/555, `SHA256SUMS` verified (7/7 OK) and byte-identical to the originals.
 This is a PARTIAL backup (5 of 59). A full verified backup requires the zip + manifest from the build host.
+
+## Decision 2026-10-20: remediation happens on Penguin (option 2)
+Hand-off inbox (created, empty): `~/Rendezvous/code-handoffs/inbox-160/` on Penguin. Read-only verifier staged there: `verify_160.py` (sha256 `6bcfb047…ef01`, chmod 555).
+Expected drop: `proficio-skill-1.6.0.zip` (211 KB; build-host sha256 claimed `a892e06d…e42e`) and `1.6.0-MANIFEST.txt` (claimed sha256 = `800b9e68…7c72`). COPY, do not move; do not modify originals.
+Steps once both files are in the inbox: (1) `python3 -I verify_160.py 1.6.0-MANIFEST.txt proficio-skill-1.6.0.zip` → expect ALL PASS (manifest==target, 59 lines, zip members == manifest, five recovered files match);
+(2) ChatGPT independently re-runs the same check and reports its own output; (3) make a read-only backup copy next to the partial backup; (4) only then create the separate 1.6.1-candidate working tree and start R1–R11.
+Verifier assumption: zip member paths are either `./path`, `path`, or prefixed `proficio-skill-1.6.0/`; adjust prefix handling if the archive layout differs (report, don't guess).
+No remediation work started before step (1)–(2) pass.
