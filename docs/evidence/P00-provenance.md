@@ -217,3 +217,22 @@ INFERENCE (unproven): the 2026-10-03 "build completed" may have occurred in a sa
 persisted to Penguin (builder-reported only: 25/25 and 163 passed are unverified claims), or the tree was deleted
 between 10-03 and 10-05. Either way no 1.6.0 tree exists in any location I can read.
 P00 remains BLOCKED (5/59 files).
+
+## 2026-10-20 — Remaining GitHub repos scanned (owner: "check our GitHub repos")
+Account hermes-max100 lists 52 repos (list_repos, has_more=false). Branch tips (depth 1, all branches) of 21 more
+non-fork repos scanned for `800b9e68`, `proficio-skill-1.6`, `proficio-approverd`, "Ed25519-signed, verify-only",
+`proficio-peer-tests`, and paths approvals.py/binder.py/*proficio*:
+private — CFK-Consulting(2 br), colorstone-odyssey, MEvalKit, hse-v5.3.1-hardened (EMPTY, 0 branches), cash-for-keys
+(12 br), wave-craft-pixel-brook, otter-jolly-sapphire-drift, grok-bot-018-harness-map, scratchpad-2026.1-RC1,
+moltpe-gateway, hse-enterprise-bola-assurance (4 br), codexskills (EMPTY);
+public — verifactum-os, Hermes-Master-JARVIS-public, Jarvis-Ultra-Master, Tempest-Mobile, hse-enterprise (EMPTY),
+hermes-max, Repo2Video, Repo-to-Promo, browser-harness-custom.
+Result: 0 content hits. One path hit: `verifactum-os/docs/PROFICIO_KERNEL.md` (2023 B; "Proficio Kernel Contract",
+seven contracts for the Verifactum legal-OS design spec, commit 8cd013a, 2026-09-25) — a design doc, no code,
+no version/hash. Not scanned: the forks (codex, ruflo, rea, happy, dsh-unrestricted, hermes-mobile, ECC,
+open-code-review, cc-multi-cli-plugin, CROWBRAIN, artemis, bifrost, OBLITERATUS, last30days-skill, hermes-relay,
+oh-my-hermes, TradingAgents, skill-cabinet, agents, freellmapi, SkillOpt, T3MP3ST, heretic, google-maps-scraper,
+MEvalKit-upstream) and two private legal-case repos (legal-skills, e088165-court-pdf-merge — deliberately not opened).
+History behind branch tips: not inspected. Conclusion: with proficio, agent-skills, Hermes-Ultra, Hermes-Master-JARVIS
+and perplexity-connector-bridge already searched, no GitHub repo in the account holds the 1.6.0 tree.
+P00 BLOCKED (5/59).
