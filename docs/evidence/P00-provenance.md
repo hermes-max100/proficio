@@ -266,3 +266,18 @@ Next gate (owner action): from the build host, export `proficio-skill-1.6.0.zip`
 manifest, (c) recompute the aggregate manifest digest and compare to 800b9e683acfd749fa593cd25fb5bcbbdae726fe34627cf164d27c73acff7c72 (construction procedure must come from the manifest
 or build note), (d) compare approvals/binder/envelope/policy/runner against the 5 recovered hashes. Until then P00 = BLOCKED.
 Baseline implication: even if authenticated, 1.6.0 is "frozen with known defects" (Phase 8 FAIL), not release-grade; P01+ certification targets must say so.
+
+## 2026-10-20 — STATUS UPDATE relayed from the build host's own agent (unattributed paste; NOT independently verified)
+Claim: the build host (stated to be the machine the agent runs on) holds the frozen tree at `~/workspace/proficio-peer-tests/proficio-skill-1.6.0/`
+with "59/59 hashes OK just now, zero failures"; `proficio-skill-1.6.0.zip` (211 KB, Oct 3 build); manifest
+`~/workspace/skills/proficio/evidence/20261003/1.6.0-MANIFEST.txt`. Stated corrected status: RECOVERED on build host, hash-clean, frozen 1.6.0;
+do not rebuild or touch the baseline. Claim also attributes the earlier non-recovery to a flapping tunnel / timed-out handoff route.
+Claude assessment:
+- The hash check described is the build host's own check of the tree against its own manifest (self-attested). It does not state that the
+  manifest file's SHA-256 (or the aggregate digest) equals `800b9e683acfd749fa593cd25fb5bcbbdae726fe34627cf164d27c73acff7c72`; that comparison is the authenticity link and is UNVERIFIED.
+- Claude and ChatGPT still cannot read that host (no device reachable; Penguin has no such paths). No bytes, hashes, or file lists from it have been seen.
+- Therefore blueprint P00 gate ("canonical 1.6.0 provenance manifest matched") is NOT met; state = CLAIMED RECOVERED, AWAITING INDEPENDENT VERIFICATION.
+- "Do not rebuild / touch baseline" is adopted as a standing constraint; no reconstruction work will be done.
+Minimum evidence requested (small, non-sensitive): sha256 of `1.6.0-MANIFEST.txt` and of `proficio-skill-1.6.0.zip`; the manifest contents (path + sha256 per file, 59 lines)
+and the aggregate-digest construction rule; `sha256sum` of approvals.py/binder.py/envelope.py/policy.py/runner.py from the tree. Compare with recovered hashes:
+approvals 8d72125b…5693, binder cd0a6324…51a4, envelope ebce7d2f…3018e, policy ade4aab1…a724, runner 94faae39…012b.
