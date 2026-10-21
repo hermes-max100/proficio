@@ -96,3 +96,11 @@ R10: `approvals._clock_regressed` now fails closed when the stored watermark is 
 R11: `canonical_arguments` uses `allow_nan=False`; NaN/±Infinity raise `EnvelopeError`.
 Residuals: R10 watermark remains unauthenticated across restarts/other processes — a MAC needs a secret, which is an owner design decision (host DB tamper is inside the host trust boundary per the adjudication); R9 does not detect wholesale replacement of ledger entries AND heads together; R8 covers absolute targets only; legacy mode relaxes R8 and the legacy suite does not exercise it.
 Status: **R1–R11 all implemented on the candidate (PARTIAL, not a release).** Still open: R1 gaps (policy_version/environment/transaction_hash binding; runner-owned dispatch so the arguments hash binds what the callback does), R2b (destination/route allow-list), R9/R10 residuals above, test_race_matrix + kill-sweep unverified. Gates before any 1.6.1 label: full Phase 8 re-run on a clean tree, independent adjudicator (not Claude), owner approval.
+
+## Progress — R1 gaps + R2b (2026-10-21, Penguin)
+Tests: `tests/test_161_r1gaps_r2b.py` (8 tests, strict). Failing-first on frozen: **6 failed, 2 passed**. Candidate: r1gaps_r2b + r8r11 + r5r7 + r3r4 + r1r2 + `test_160_acceptance.py` = 70 passed, 1 failed (`test_p7_privilege_as_runtime_uid`, known baseline failure: `chown` needs root).
+Regression: `cand_perfile_gaps.txt` — 28 files rc=0, 1 rc=124 (`test_race_matrix.py`, same on baseline), 0 failures.
+Added: `PolicyBound`, `EnvironmentBound` (enforced only when `expected_environment`/`PROFICIO_ENVIRONMENT` set), `TransactionBound` (recomputed digest; needs the daemon change `issued_at=1` in the digest skeleton; legacy-relaxed), `RunContext.dispatch_step` (runner-owned dispatch), `DestinationAllowed` (`destination_policy`, default RESTRICTED→`local`).
+Residuals: opaque-callback `execute_step` still available (adapters not migrated); audience not bound; destination = bind provider only; daemon change needs independent review.
+Correction: earlier "N files rc=0" counts in this log were each one too low (see `PHASE8-RERUN-PACKAGE.md`); no failures in any run.
+Phase 8 re-run package prepared — see `docs/remediation/PHASE8-RERUN-PACKAGE.md`.
